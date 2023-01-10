@@ -1,0 +1,36 @@
+create database dbdisparador;
+
+use dbdisparador;
+
+create table tbvale(
+idsenha MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
+senha varchar(50),
+vencimento date);
+
+create table tbconfig(
+idconf MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
+firefoxBinary_path text,
+geckoExe_path text,
+firefoxProfile_path text,
+mensagem text,
+midia_path text);
+
+create table tbgrupos(
+idgrupo MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
+nomeGrupo text,
+conjunto int
+);
+
+create table tbclientes(
+idcliente MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
+nomecliente text,
+telefonecliente varchar(18),
+conjuntocliente int
+);
+
+insert into tbconfig(idconf) values(1);
+
+describe tbvale;
+
+select * from tbvale;
+select * from tbconfig;
