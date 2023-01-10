@@ -29,6 +29,7 @@ conjuntocliente int
 );
 
 insert into tbconfig(idconf) values(1);
+insert into tbvale(idsenha,senha) values(1,"vazio");
 
 describe tbvale;
 
