@@ -292,7 +292,7 @@ public class TelaGrupos extends javax.swing.JFrame {
 
             driver.get("https://web.whatsapp.com/");
 
-            Thread.sleep(10000);
+            Thread.sleep(120000);
 
             for (int n = 0; n <= auxGrupos.getRowCount(); n++) {
                 act.keyDown(Keys.CONTROL).keyDown(Keys.ALT).keyDown(Keys.SHIFT).keyDown("]").perform();
