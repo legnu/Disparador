@@ -292,7 +292,7 @@ public class TelaGrupos extends javax.swing.JFrame {
 
             driver.get("https://web.whatsapp.com/");
 
-            Thread.sleep(60000);
+            Thread.sleep(10000);
 
             for (int n = 0; n <= auxGrupos.getRowCount(); n++) {
                 act.keyDown(Keys.CONTROL).keyDown(Keys.ALT).keyDown(Keys.SHIFT).keyDown("]").perform();
@@ -302,7 +302,7 @@ public class TelaGrupos extends javax.swing.JFrame {
             
             Thread.sleep(3000);
 
-            for (int i = 0; i <= auxGrupos.getRowCount(); i++) {
+            for (int i = 0; i < auxGrupos.getRowCount(); i++) {
                 driver.findElement(By.xpath("//div[contains(@class,'copyable-text selectable-text')]")).click();
                 Thread.sleep(1000);
                 act.sendKeys(auxGrupos.getModel().getValueAt(i, 1).toString()).perform();
@@ -311,12 +311,17 @@ public class TelaGrupos extends javax.swing.JFrame {
                 driver.findElement(By.cssSelector("div[title='Mensagem']")).click();
                 Thread.sleep(1000);
                 act.sendKeys(taMensagem.getText()).perform();
+                if(txtMidia.getText().isBlank() ==  false){
                 driver.findElement(By.cssSelector("span[data-icon='clip']")).click();
                 Thread.sleep(3000);
                 driver.findElement(By.cssSelector("input[type='file']")).sendKeys(txtMidia.getText());
                 Thread.sleep(3000);
                 driver.findElement(By.cssSelector("span[data-icon='send']")).click();
                 Thread.sleep(3000);
+                }else{
+                    Thread.sleep(1000);
+                    act.sendKeys(Keys.ENTER).perform();                    
+                }
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
@@ -327,7 +332,6 @@ public class TelaGrupos extends javax.swing.JFrame {
      
 
     public void Limpar() {
-        txtMidia.setText(null);
         txtNomeGrupo.setText(null);
         txtNumeroGrupo.setText(null);
         btnAdicionar.setEnabled(true);
@@ -581,6 +585,11 @@ public class TelaGrupos extends javax.swing.JFrame {
 
         txtMidia.setEditable(false);
         txtMidia.setEnabled(false);
+        txtMidia.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtMidiaMouseClicked(evt);
+            }
+        });
         txtMidia.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtMidiaActionPerformed(evt);
@@ -780,6 +789,12 @@ public class TelaGrupos extends javax.swing.JFrame {
         // TODO add your handling code here:
         PesquisarGrupo();
     }//GEN-LAST:event_txtPesquisaKeyReleased
+
+    private void txtMidiaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtMidiaMouseClicked
+        // TODO add your handling code here:
+                txtMidia.setText(null);
+
+    }//GEN-LAST:event_txtMidiaMouseClicked
 
     /**
      * @param args the command line arguments

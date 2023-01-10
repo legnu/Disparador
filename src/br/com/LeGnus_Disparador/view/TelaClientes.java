@@ -286,7 +286,7 @@ public class TelaClientes extends javax.swing.JFrame {
 
             driver.get("https://web.whatsapp.com/");
 
-            Thread.sleep(60000);
+            Thread.sleep(120000);
 
             for (int n = 0; n <= auxClientes.getRowCount(); n++) {
                 act.keyDown(Keys.CONTROL).keyDown(Keys.ALT).keyDown(Keys.SHIFT).keyDown("]").perform();
@@ -296,7 +296,7 @@ public class TelaClientes extends javax.swing.JFrame {
             
             Thread.sleep(3000);
 
-            for (int i = 0; i <= auxClientes.getRowCount(); i++) {
+            for (int i = 0; i < auxClientes.getRowCount(); i++) {
                 driver.findElement(By.xpath("//div[contains(@class,'copyable-text selectable-text')]")).click();
                 Thread.sleep(1000);
                 act.sendKeys(auxClientes.getModel().getValueAt(i, 1).toString()).perform();
@@ -305,12 +305,17 @@ public class TelaClientes extends javax.swing.JFrame {
                 driver.findElement(By.cssSelector("div[title='Mensagem']")).click();
                 Thread.sleep(1000);
                 act.sendKeys(taMensagem.getText()).perform();
+                if(txtMidia.getText().isBlank() ==  false){
                 driver.findElement(By.cssSelector("span[data-icon='clip']")).click();
                 Thread.sleep(3000);
                 driver.findElement(By.cssSelector("input[type='file']")).sendKeys(txtMidia.getText());
                 Thread.sleep(3000);
                 driver.findElement(By.cssSelector("span[data-icon='send']")).click();
                 Thread.sleep(3000);
+                }else{
+                    Thread.sleep(1000);
+                    act.sendKeys(Keys.ENTER).perform();                    
+                }
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
@@ -331,8 +336,7 @@ public class TelaClientes extends javax.swing.JFrame {
         }
     }
 
-    public void Limpar() {
-        txtMidia.setText(null);
+    public void Limpar() {        
         txtNomeCliente.setText(null);
         txtNumeroCliente.setText(null);
         txtTelefoneCliente.setText(null);
@@ -534,7 +538,7 @@ public class TelaClientes extends javax.swing.JFrame {
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Telefone_Cliente", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
 
         try {
-            txtTelefoneCliente.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("#####-####")));
+            txtTelefoneCliente.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("(##)#####-####")));
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
         }
@@ -616,6 +620,13 @@ public class TelaClientes extends javax.swing.JFrame {
         jPanel8.setBackground(new java.awt.Color(204, 204, 204));
         jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Mídia", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
 
+        txtMidia.setEditable(false);
+        txtMidia.setEnabled(false);
+        txtMidia.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtMidiaMouseClicked(evt);
+            }
+        });
         txtMidia.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtMidiaActionPerformed(evt);
@@ -775,6 +786,7 @@ public class TelaClientes extends javax.swing.JFrame {
 
     private void txtMidiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMidiaActionPerformed
         // TODO add your handling code here:
+
     }//GEN-LAST:event_txtMidiaActionPerformed
 
     private void btnDispararActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDispararActionPerformed
@@ -826,6 +838,11 @@ public class TelaClientes extends javax.swing.JFrame {
         // TODO add your handling code here:
         PesquisarCliente();
     }//GEN-LAST:event_txtPesquisaKeyReleased
+
+    private void txtMidiaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtMidiaMouseClicked
+        // TODO add your handling code here:
+        txtMidia.setText(null);
+    }//GEN-LAST:event_txtMidiaMouseClicked
 
     /**
      * @param args the command line arguments

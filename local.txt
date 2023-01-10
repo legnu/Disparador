@@ -28,10 +28,11 @@ telefonecliente varchar(18),
 conjuntocliente int
 );
 
-insert into tbconfig(idconf) values(1);
+insert into tbconfig(idconf,mensagem,midia_path) values(1,"","");
 insert into tbvale(idsenha,senha) values(1,"vazio");
 
 describe tbvale;
 
 select * from tbvale;
 select * from tbconfig;
+
