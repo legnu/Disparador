@@ -8,6 +8,7 @@ import br.com.LeGnus_Disparador.model.ModuloConexao;
 import br.com.LeGnus_Disparador.model.PythonJava;
 import java.awt.Toolkit;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.security.spec.KeySpec;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -44,6 +45,8 @@ public class TelaClientes extends javax.swing.JFrame {
         initComponents();
         conexao = ModuloConexao.conector();
         setIcon();
+        System.out.println(System.getProperty("file.encoding"));
+
     }
 
     private void setIcon() {
@@ -61,7 +64,7 @@ public class TelaClientes extends javax.swing.JFrame {
 
         }
     }
-    
+
     private void instanciarAuxClientes() {
         String sql = "select idcliente as NºCliente, nomecliente as Cliente,telefonecliente as Telefone from tbclientes";
         try {
@@ -97,7 +100,7 @@ public class TelaClientes extends javax.swing.JFrame {
             pst.setString(2, txtTelefoneCliente.getText());
             if (txtNomeCliente.getText().isEmpty() == true) {
                 JOptionPane.showMessageDialog(null, "Adicione um Nome para o Cliente.");
-            } else if (txtTelefoneCliente.getText().equals("     -    ") == true) {
+            } else if (txtTelefoneCliente.getText().equals("(  )     -    ") == true) {
                 JOptionPane.showMessageDialog(null, "Adcione um Telefone para o Cliente");
             } else {
                 //A linha abaixo atualiza os dados do novo usuario
@@ -114,8 +117,8 @@ public class TelaClientes extends javax.swing.JFrame {
 
         }
     }
-    
-    private void PesquisarCliente(){
+
+    private void PesquisarCliente() {
         String sql = "select idcliente as NºCliente, nomecliente as Cliente,telefonecliente as Telefone from tbclientes where nomecliente like ?";
         try {
             pst = conexao.prepareStatement(sql);
@@ -152,7 +155,7 @@ public class TelaClientes extends javax.swing.JFrame {
             pst.setString(3, txtNumeroCliente.getText());
             if (txtNomeCliente.getText().isEmpty() == true) {
                 JOptionPane.showMessageDialog(null, "Adicione um Nome para o Cliente.");
-            } else if (txtTelefoneCliente.getText().equals("     -    ") == true) {
+            } else if (txtTelefoneCliente.getText().equals("(  )     -    ") == true) {
                 JOptionPane.showMessageDialog(null, "Adcione um Telefone para o Cliente");
             } else {
                 //A linha abaixo atualiza os dados do novo usuario
@@ -265,6 +268,8 @@ public class TelaClientes extends javax.swing.JFrame {
         }
     }
 
+    
+
     public void disparar() {
         try {
             String sql = "update tbconfig set mensagem=?,midia_path=? where idconf=1";
@@ -272,12 +277,13 @@ public class TelaClientes extends javax.swing.JFrame {
             pst.setString(1, taMensagem.getText());
             pst.setString(2, txtMidia.getText());
             pst.executeUpdate();
+            instanciarTbConfig();
 
             System.setProperty("webdriver.gecko.driver", tbConfig.getModel().getValueAt(0, 2).toString());
             FirefoxOptions options = new FirefoxOptions();
 
-            ProfilesIni profini = new ProfilesIni();    
-            FirefoxProfile prof = profini.getProfile(tbConfig.getModel().getValueAt(0, 3).toString());   
+            ProfilesIni profini = new ProfilesIni();
+            FirefoxProfile prof = profini.getProfile(tbConfig.getModel().getValueAt(0, 3).toString());
             options.setBinary(tbConfig.getModel().getValueAt(0, 1).toString());
             options.setProfile(prof);
 
@@ -293,7 +299,7 @@ public class TelaClientes extends javax.swing.JFrame {
             }
 
             act.keyUp(Keys.CONTROL).keyUp(Keys.ALT).keyUp(Keys.SHIFT).keyUp("]").perform();
-            
+
             Thread.sleep(3000);
 
             for (int i = 0; i < auxClientes.getRowCount(); i++) {
@@ -304,18 +310,26 @@ public class TelaClientes extends javax.swing.JFrame {
                 act.sendKeys(Keys.ARROW_DOWN, Keys.ENTER).perform();
                 driver.findElement(By.cssSelector("div[title='Mensagem']")).click();
                 Thread.sleep(1000);
-                act.sendKeys(taMensagem.getText()).perform();
-                if(txtMidia.getText().isBlank() ==  false){
-                driver.findElement(By.cssSelector("span[data-icon='clip']")).click();
-                Thread.sleep(3000);
-                driver.findElement(By.cssSelector("input[type='file']")).sendKeys(txtMidia.getText());
-                Thread.sleep(3000);
-                driver.findElement(By.cssSelector("span[data-icon='send']")).click();
-                Thread.sleep(3000);
-                }else{
+                act.sendKeys(tbConfig.getModel().getValueAt(0, 4).toString()).perform();
+                if (txtMidia.getText().isBlank() == false) {
+                    driver.findElement(By.cssSelector("span[data-icon='clip']")).click();
+                    Thread.sleep(3000);
+                    driver.findElement(By.cssSelector("input[type='file']")).sendKeys(tbConfig.getModel().getValueAt(0, 5).toString());
+                    Thread.sleep(3000);
+                    driver.findElement(By.cssSelector("span[data-icon='send']")).click();
+                    Thread.sleep(3000);
+                } else {
                     Thread.sleep(1000);
-                    act.sendKeys(Keys.ENTER).perform();                    
+                    act.sendKeys(Keys.ENTER).perform();                   
                 }
+                Thread.sleep(1000);
+                    driver.findElement(By.xpath("//div[contains(@class,'copyable-text selectable-text')]")).click();
+                    for (int n = 0; n <= 100; n++) {
+                        act.sendKeys(Keys.DELETE).perform();
+                        act.sendKeys(Keys.BACK_SPACE).perform();
+                    }
+                    Thread.sleep(3000);
+                    act.sendKeys(Keys.DELETE).perform();
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
@@ -336,7 +350,7 @@ public class TelaClientes extends javax.swing.JFrame {
         }
     }
 
-    public void Limpar() {        
+    public void Limpar() {
         txtNomeCliente.setText(null);
         txtNumeroCliente.setText(null);
         txtTelefoneCliente.setText(null);
@@ -494,6 +508,11 @@ public class TelaClientes extends javax.swing.JFrame {
         jPanel3.setBackground(new java.awt.Color(204, 204, 204));
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Nome_Cliente", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
 
+        txtNomeCliente.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtNomeClienteMouseClicked(evt);
+            }
+        });
         txtNomeCliente.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtNomeClienteActionPerformed(evt);
@@ -508,7 +527,7 @@ public class TelaClientes extends javax.swing.JFrame {
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(txtNomeCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(txtNomeCliente)
         );
 
         jPanel5.setBackground(new java.awt.Color(204, 204, 204));
@@ -542,6 +561,8 @@ public class TelaClientes extends javax.swing.JFrame {
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
         }
+        txtTelefoneCliente.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+        txtTelefoneCliente.setToolTipText("");
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -843,6 +864,11 @@ public class TelaClientes extends javax.swing.JFrame {
         // TODO add your handling code here:
         txtMidia.setText(null);
     }//GEN-LAST:event_txtMidiaMouseClicked
+
+    private void txtNomeClienteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtNomeClienteMouseClicked
+        // TODO add your handling code here:
+
+    }//GEN-LAST:event_txtNomeClienteMouseClicked
 
     /**
      * @param args the command line arguments

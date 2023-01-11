@@ -30,6 +30,7 @@ import org.openqa.selenium.interactions.Actions;
  * @author Ad3ln0r
  */
 public class TelaGrupos extends javax.swing.JFrame {
+
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
@@ -42,24 +43,25 @@ public class TelaGrupos extends javax.swing.JFrame {
         conexao = ModuloConexao.conector();
         setIcon();
     }
-    
+
     private void setIcon() {
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/br/com/LeGnus_Disparador/util/ERPGestao64.png")));
     }
-    
-    public void buscarFoto(){
+
+    public void buscarFoto() {
         JFileChooser arquivo = new JFileChooser();
         arquivo.setDialogTitle("SELECIONE UMA IMAGEM");
         arquivo.setFileSelectionMode(JFileChooser.FILES_ONLY);
         int op = arquivo.showOpenDialog(this);
-        if(op == JFileChooser.APPROVE_OPTION){
+        if (op == JFileChooser.APPROVE_OPTION) {
             File file = new File("");
             file = arquivo.getSelectedFile();
             String fileName = file.getAbsolutePath();
             txtMidia.setText(fileName);
         }
     }
-     private void instanciarTbGrupos() {
+
+    private void instanciarTbGrupos() {
         String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo from tbgrupos";
         try {
             pst = conexao.prepareStatement(sql);
@@ -70,7 +72,7 @@ public class TelaGrupos extends javax.swing.JFrame {
 
         }
     }
-     
+
     private void instanciarAuxGrupos() {
         String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo from tbgrupos";
         try {
@@ -97,7 +99,7 @@ public class TelaGrupos extends javax.swing.JFrame {
 
         }
     }
-    
+
     private void PesquisarGrupo() {
         String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo from tbgrupos where nomeGrupo like ?";
         try {
@@ -110,7 +112,7 @@ public class TelaGrupos extends javax.swing.JFrame {
 
         }
     }
-    
+
     private void adicionarGrupo() {
         String sql = "insert into tbgrupos(nomeGrupo) values(?)";
         try {
@@ -118,7 +120,7 @@ public class TelaGrupos extends javax.swing.JFrame {
             pst.setString(1, txtNomeGrupo.getText());
             if (txtNomeGrupo.getText().isEmpty() == true) {
                 JOptionPane.showMessageDialog(null, "Adicione um Nome para o Grupo.");
-           
+
             } else {
                 //A linha abaixo atualiza os dados do novo usuario
                 int adicionado = pst.executeUpdate();
@@ -134,8 +136,6 @@ public class TelaGrupos extends javax.swing.JFrame {
 
         }
     }
-    
-   
 
     private void selecionarGrupo() {
         int setar = tbGrupos.getSelectedRow();
@@ -158,7 +158,7 @@ public class TelaGrupos extends javax.swing.JFrame {
             pst.setString(1, txtNomeGrupo.getText());
             pst.setString(2, txtNumeroGrupo.getText());
             if (txtNomeGrupo.getText().isEmpty() == true) {
-                JOptionPane.showMessageDialog(null, "Adicione um Nome para o Grupo.");           
+                JOptionPane.showMessageDialog(null, "Adicione um Nome para o Grupo.");
             } else {
                 //A linha abaixo atualiza os dados do novo usuario
                 int adicionado = pst.executeUpdate();
@@ -185,11 +185,11 @@ public class TelaGrupos extends javax.swing.JFrame {
                 pst = conexao.prepareStatement(sql);
                 pst.setString(1, txtNumeroGrupo.getText());
                 pst.executeUpdate();
-                    JOptionPane.showMessageDialog(null, "Clique no OK e Aguarde.");
-                    tirarId();
-                    criarId();
-                    JOptionPane.showMessageDialog(null, "Cliente removido com sucesso.");
-                    Limpar();
+                JOptionPane.showMessageDialog(null, "Clique no OK e Aguarde.");
+                tirarId();
+                criarId();
+                JOptionPane.showMessageDialog(null, "Cliente removido com sucesso.");
+                Limpar();
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
                 Limpar();
@@ -197,8 +197,8 @@ public class TelaGrupos extends javax.swing.JFrame {
         }
 
     }
-    
-     private void tirarId() {
+
+    private void tirarId() {
 
         String sql = "alter table tbgrupos drop idgrupo";
         try {
@@ -223,34 +223,33 @@ public class TelaGrupos extends javax.swing.JFrame {
             Limpar();
         }
     }
-    
-    private void configurar(){
-        
-      
+
+    private void configurar() {
+
         JLabel rotulo = new JLabel("Digite a senha:");
         JPasswordField password = new JPasswordField(10);
-	password.setEchoChar('*'); 
+        password.setEchoChar('*');
         JPanel entUsuario = new JPanel();
-	entUsuario.add(rotulo);
-	entUsuario.add(password);
-        
+        entUsuario.add(rotulo);
+        entUsuario.add(password);
+
         JOptionPane.showMessageDialog(null, entUsuario, "Cabeçario de configurações", JOptionPane.PLAIN_MESSAGE);
 
         String senha = password.getText();
-        
-        if(senha.equals("13180720") == true){
-            
-           String firefox_path = JOptionPane.showInputDialog("Firefox Binary Path.");
-           String gecko_path = JOptionPane.showInputDialog("Gecko Executable Path.");
-           String profile = JOptionPane.showInputDialog("Profile Path/Name.");   
-           
-           String sql = "update tbconfig set firefoxBinary_path=?,geckoExe_path=?,firefoxProfile_path=? where idconf=1";
-        try {
-            pst = conexao.prepareStatement(sql);
-            pst.setString(1, firefox_path);
-            pst.setString(2, gecko_path);
-            pst.setString(3, profile);
-           
+
+        if (senha.equals("13180720") == true) {
+
+            String firefox_path = JOptionPane.showInputDialog("Firefox Binary Path.");
+            String gecko_path = JOptionPane.showInputDialog("Gecko Executable Path.");
+            String profile = JOptionPane.showInputDialog("Profile Path/Name.");
+
+            String sql = "update tbconfig set firefoxBinary_path=?,geckoExe_path=?,firefoxProfile_path=? where idconf=1";
+            try {
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, firefox_path);
+                pst.setString(2, gecko_path);
+                pst.setString(3, profile);
+
                 //A linha abaixo atualiza os dados do novo usuario
                 int adicionado = pst.executeUpdate();
                 //A Linha abaixo serve de apoio ao entendimento da logica
@@ -259,18 +258,18 @@ public class TelaGrupos extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(null, "Configurado com sucesso.");
                     Limpar();
                 }
-            
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
 
-        }
-           
-        }else{
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+
+            }
+
+        } else {
             JOptionPane.showMessageDialog(null, "Senha Incorreta.");
             Limpar();
         }
     }
-    
+
     public void disparar() {
         try {
             String sql = "update tbconfig set mensagem=?,midia_path=? where idconf=1";
@@ -278,12 +277,13 @@ public class TelaGrupos extends javax.swing.JFrame {
             pst.setString(1, taMensagem.getText());
             pst.setString(2, txtMidia.getText());
             pst.executeUpdate();
+            instanciarTbConfig();
 
             System.setProperty("webdriver.gecko.driver", tbConfig.getModel().getValueAt(0, 2).toString());
             FirefoxOptions options = new FirefoxOptions();
 
-            ProfilesIni profini = new ProfilesIni();    
-            FirefoxProfile prof = profini.getProfile(tbConfig.getModel().getValueAt(0, 3).toString());   
+            ProfilesIni profini = new ProfilesIni();
+            FirefoxProfile prof = profini.getProfile(tbConfig.getModel().getValueAt(0, 3).toString());
             options.setBinary(tbConfig.getModel().getValueAt(0, 1).toString());
             options.setProfile(prof);
 
@@ -299,7 +299,7 @@ public class TelaGrupos extends javax.swing.JFrame {
             }
 
             act.keyUp(Keys.CONTROL).keyUp(Keys.ALT).keyUp(Keys.SHIFT).keyUp("]").perform();
-            
+
             Thread.sleep(3000);
 
             for (int i = 0; i < auxGrupos.getRowCount(); i++) {
@@ -310,26 +310,32 @@ public class TelaGrupos extends javax.swing.JFrame {
                 act.sendKeys(Keys.ARROW_DOWN, Keys.ENTER).perform();
                 driver.findElement(By.cssSelector("div[title='Mensagem']")).click();
                 Thread.sleep(1000);
-                act.sendKeys(taMensagem.getText()).perform();
-                if(txtMidia.getText().isBlank() ==  false){
-                driver.findElement(By.cssSelector("span[data-icon='clip']")).click();
-                Thread.sleep(3000);
-                driver.findElement(By.cssSelector("input[type='file']")).sendKeys(txtMidia.getText());
-                Thread.sleep(3000);
-                driver.findElement(By.cssSelector("span[data-icon='send']")).click();
-                Thread.sleep(3000);
-                }else{
+                act.sendKeys(tbConfig.getModel().getValueAt(0, 4).toString()).perform();
+                if (txtMidia.getText().isBlank() == false) {
+                    driver.findElement(By.cssSelector("span[data-icon='clip']")).click();
+                    Thread.sleep(3000);
+                    driver.findElement(By.cssSelector("input[type='file']")).sendKeys(tbConfig.getModel().getValueAt(0, 5).toString());
+                    Thread.sleep(3000);
+                    driver.findElement(By.cssSelector("span[data-icon='send']")).click();
+                    Thread.sleep(3000);
+                } else {
                     Thread.sleep(1000);
-                    act.sendKeys(Keys.ENTER).perform();                    
+                    act.sendKeys(Keys.ENTER).perform();
                 }
+                Thread.sleep(1000);
+                driver.findElement(By.xpath("//div[contains(@class,'copyable-text selectable-text')]")).click();
+                for (int n = 0; n <= 100; n++) {
+                    act.sendKeys(Keys.DELETE).perform();
+                    act.sendKeys(Keys.BACK_SPACE).perform();
+                }
+                Thread.sleep(3000);
+                act.sendKeys(Keys.DELETE).perform();
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
             Limpar();
         }
     }
-
-     
 
     public void Limpar() {
         txtNomeGrupo.setText(null);
@@ -340,9 +346,8 @@ public class TelaGrupos extends javax.swing.JFrame {
         instanciarTbGrupos();
         instanciarAuxGrupos();
         instanciarTbConfig();
-       
-    }
 
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -734,7 +739,7 @@ public class TelaGrupos extends javax.swing.JFrame {
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         // TODO add your handling code here:
         TelaPrincipal principal = new TelaPrincipal();
-                principal.setVisible(true);
+        principal.setVisible(true);
     }//GEN-LAST:event_formWindowClosed
 
     private void txtMidiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtMidiaActionPerformed
@@ -792,7 +797,7 @@ public class TelaGrupos extends javax.swing.JFrame {
 
     private void txtMidiaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtMidiaMouseClicked
         // TODO add your handling code here:
-                txtMidia.setText(null);
+        txtMidia.setText(null);
 
     }//GEN-LAST:event_txtMidiaMouseClicked
 
