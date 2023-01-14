@@ -294,13 +294,13 @@ public class TelaClientes extends javax.swing.JFrame {
 
             Thread.sleep(120000);
 
-            for (int n = 0; n <= auxClientes.getRowCount(); n++) {
+            for (int n = 0; n <= 5000; n++) {
                 act.keyDown(Keys.CONTROL).keyDown(Keys.ALT).keyDown(Keys.SHIFT).keyDown("]").perform();
             }
 
             act.keyUp(Keys.CONTROL).keyUp(Keys.ALT).keyUp(Keys.SHIFT).keyUp("]").perform();
 
-            Thread.sleep(3000);
+            Thread.sleep(60000);
 
             for (int i = 0; i < auxClientes.getRowCount(); i++) {
                 driver.findElement(By.xpath("//div[contains(@class,'copyable-text selectable-text')]")).click();
