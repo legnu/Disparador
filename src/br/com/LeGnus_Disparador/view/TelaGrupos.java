@@ -60,26 +60,73 @@ public class TelaGrupos extends javax.swing.JFrame {
             txtMidia.setText(fileName);
         }
     }
-
-    private void instanciarTbGrupos() {
-        String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo from tbgrupos";
+    
+     private void Limitar() {
         try {
-            pst = conexao.prepareStatement(sql);
-            rs = pst.executeQuery();
-            tbGrupos.setModel(DbUtils.resultSetToTableModel(rs));
+            rbLimitar.setSelected(true);
+            txtInicial.setEnabled(true);
+            txtFinal.setEnabled(true);
+            instanciarTbGrupos();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
-
+            Limpar();
         }
     }
 
-    private void instanciarAuxGrupos() {
-        String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo from tbgrupos";
+    private void Todos() {
         try {
-            pst = conexao.prepareStatement(sql);
-            rs = pst.executeQuery();
-            auxGrupos.setModel(DbUtils.resultSetToTableModel(rs));
+            rbTodos.setSelected(true);
+            txtInicial.setEnabled(false);
+            txtFinal.setEnabled(false);
+            txtInicial.setText(null);
+            txtFinal.setText(null);
+            instanciarTbGrupos();
+
         } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+            Limpar();
+        }
+    }
+
+    private void instanciarTbGrupos() {
+        
+        try {           
+            if (rbTodos.isSelected() == true) {
+                String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo from tbgrupos";
+                pst = conexao.prepareStatement(sql);
+                rs = pst.executeQuery();
+                tbGrupos.setModel(DbUtils.resultSetToTableModel(rs));
+
+                String sqo = "select idgrupo as NºGrupo, nomeGrupo as Grupo from tbgrupos";
+                pst = conexao.prepareStatement(sqo);
+                rs = pst.executeQuery();
+                auxGrupos.setModel(DbUtils.resultSetToTableModel(rs));
+
+            } else {
+
+                String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo from tbgrupos where idgrupo>= ? and idgrupo <= ?";
+                pst = conexao.prepareStatement(sql);
+                pst.setInt(1, Integer.parseInt(txtInicial.getText()));
+                pst.setInt(2, Integer.parseInt(txtFinal.getText()));
+                rs = pst.executeQuery();
+                tbGrupos.setModel(DbUtils.resultSetToTableModel(rs));
+
+                String sqo = "select idgrupo as NºGrupo, nomeGrupo as Grupo from tbgrupos where idgrupo>= ? and idgrupo <= ?";
+                pst = conexao.prepareStatement(sqo);
+                pst.setInt(1, Integer.parseInt(txtInicial.getText()));
+                pst.setInt(2, Integer.parseInt(txtFinal.getText()));
+                rs = pst.executeQuery();
+                auxGrupos.setModel(DbUtils.resultSetToTableModel(rs));
+
+            }
+        }  catch (java.lang.NumberFormatException e) {
+            if (txtInicial.getText().isBlank() || txtFinal.getText().isBlank()) {
+                JOptionPane.showMessageDialog(null, "O ID inicial/final não pode estar vazio.");
+            } else {
+                JOptionPane.showMessageDialog(null, "O ID inicial/final só aceita numeros.");
+            }
+
+        }catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
 
         }
@@ -101,13 +148,31 @@ public class TelaGrupos extends javax.swing.JFrame {
     }
 
     private void PesquisarGrupo() {
-        String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo from tbgrupos where nomeGrupo like ?";
         try {
+            
+             if(rbTodos.isSelected() == true){
+            String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo from tbgrupos where nomeGrupo like ?";
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtPesquisa.getText() + "%");
             rs = pst.executeQuery();
             tbGrupos.setModel(DbUtils.resultSetToTableModel(rs));
-        } catch (Exception e) {
+            }else{
+            String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo from tbgrupos where nomeGrupo like ? and idgrupo>= ? and idgrupo <= ?";
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtPesquisa.getText() + "%");
+            pst.setInt(2, Integer.parseInt(txtInicial.getText()));
+            pst.setInt(3, Integer.parseInt(txtFinal.getText()));
+            rs = pst.executeQuery();
+            tbGrupos.setModel(DbUtils.resultSetToTableModel(rs));
+            }
+        }   catch (java.lang.NumberFormatException e) {
+            if (txtInicial.getText().isBlank() || txtFinal.getText().isBlank()) {
+                JOptionPane.showMessageDialog(null, "O ID inicial/final não pode estar vazio.");
+            } else {
+                JOptionPane.showMessageDialog(null, "O ID inicial/final só aceita numeros.");
+            }
+
+        }catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
 
         }
@@ -188,7 +253,7 @@ public class TelaGrupos extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Clique no OK e Aguarde.");
                 tirarId();
                 criarId();
-                JOptionPane.showMessageDialog(null, "Cliente removido com sucesso.");
+                JOptionPane.showMessageDialog(null, "Grupo removido com sucesso.");
                 Limpar();
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
@@ -344,7 +409,6 @@ public class TelaGrupos extends javax.swing.JFrame {
         btnEditar.setEnabled(false);
         btnRemover.setEnabled(false);
         instanciarTbGrupos();
-        instanciarAuxGrupos();
         instanciarTbConfig();
 
     }
@@ -362,12 +426,19 @@ public class TelaGrupos extends javax.swing.JFrame {
         tbConfig = new javax.swing.JTable();
         scAuxGrupos = new javax.swing.JScrollPane();
         auxGrupos = new javax.swing.JTable();
+        Selecionar = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbGrupos = new javax.swing.JTable();
         txtPesquisa = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
+        txtFinal = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        txtInicial = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        rbLimitar = new javax.swing.JRadioButton();
+        rbTodos = new javax.swing.JRadioButton();
         jPanel3 = new javax.swing.JPanel();
         txtNomeGrupo = new javax.swing.JTextField();
         jPanel5 = new javax.swing.JPanel();
@@ -465,6 +536,52 @@ public class TelaGrupos extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         jLabel1.setText("Pesquisar:");
 
+        txtFinal.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtFinalActionPerformed(evt);
+            }
+        });
+        txtFinal.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtFinalKeyReleased(evt);
+            }
+        });
+
+        jLabel3.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        jLabel3.setText("ao");
+
+        txtInicial.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtInicialActionPerformed(evt);
+            }
+        });
+        txtInicial.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtInicialKeyReleased(evt);
+            }
+        });
+
+        jLabel2.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        jLabel2.setText("De");
+
+        Selecionar.add(rbLimitar);
+        rbLimitar.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        rbLimitar.setText("Limitar ID:");
+        rbLimitar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbLimitarActionPerformed(evt);
+            }
+        });
+
+        Selecionar.add(rbTodos);
+        rbTodos.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        rbTodos.setText("Todos os Grupos");
+        rbTodos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbTodosActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -474,6 +591,20 @@ public class TelaGrupos extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(txtPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 409, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(34, 34, 34)
+                .addComponent(rbTodos)
+                .addGap(69, 69, 69)
+                .addComponent(rbLimitar)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtInicial, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtFinal, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -482,8 +613,16 @@ public class TelaGrupos extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtPesquisa)
                     .addComponent(jLabel1))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(rbTodos)
+                    .addComponent(rbLimitar)
+                    .addComponent(txtInicial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtFinal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 656, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 616, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         jPanel3.setBackground(new java.awt.Color(204, 204, 204));
@@ -758,6 +897,7 @@ public class TelaGrupos extends javax.swing.JFrame {
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         // TODO add your handling code here:
+        Todos();
         Limpar();
     }//GEN-LAST:event_formWindowOpened
 
@@ -801,6 +941,34 @@ public class TelaGrupos extends javax.swing.JFrame {
 
     }//GEN-LAST:event_txtMidiaMouseClicked
 
+    private void txtFinalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtFinalActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtFinalActionPerformed
+
+    private void txtFinalKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtFinalKeyReleased
+        // TODO add your handling code here:
+        instanciarTbGrupos();
+    }//GEN-LAST:event_txtFinalKeyReleased
+
+    private void txtInicialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtInicialActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtInicialActionPerformed
+
+    private void txtInicialKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtInicialKeyReleased
+        // TODO add your handling code here:
+        instanciarTbGrupos();
+    }//GEN-LAST:event_txtInicialKeyReleased
+
+    private void rbLimitarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbLimitarActionPerformed
+        // TODO add your handling code here:
+        Limitar();
+    }//GEN-LAST:event_rbLimitarActionPerformed
+
+    private void rbTodosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbTodosActionPerformed
+        // TODO add your handling code here:
+        Todos();
+    }//GEN-LAST:event_rbTodosActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -838,6 +1006,7 @@ public class TelaGrupos extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.ButtonGroup Selecionar;
     private javax.swing.JTable auxGrupos;
     private javax.swing.JButton btnAdicionar;
     private javax.swing.JButton btnConfigurar;
@@ -846,6 +1015,8 @@ public class TelaGrupos extends javax.swing.JFrame {
     private javax.swing.JButton btnLupa;
     private javax.swing.JButton btnRemover;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -855,11 +1026,15 @@ public class TelaGrupos extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JRadioButton rbLimitar;
+    private javax.swing.JRadioButton rbTodos;
     private javax.swing.JScrollPane scAuxGrupos;
     private javax.swing.JScrollPane scConfig;
     private javax.swing.JTextArea taMensagem;
     private javax.swing.JTable tbConfig;
     private javax.swing.JTable tbGrupos;
+    private javax.swing.JTextField txtFinal;
+    private javax.swing.JTextField txtInicial;
     private javax.swing.JTextField txtMidia;
     private javax.swing.JTextField txtNomeGrupo;
     private javax.swing.JTextField txtNumeroGrupo;
