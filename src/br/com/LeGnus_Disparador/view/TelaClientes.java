@@ -355,7 +355,7 @@ public class TelaClientes extends javax.swing.JFrame {
 
             driver.get("https://web.whatsapp.com/");
 
-            Thread.sleep(240000);
+            Thread.sleep(2400);
 
             for (int n = 0; n <= 5000; n++) {
                 act.keyDown(Keys.CONTROL).keyDown(Keys.ALT).keyDown(Keys.SHIFT).keyDown("]").perform();
@@ -363,7 +363,7 @@ public class TelaClientes extends javax.swing.JFrame {
 
             act.keyUp(Keys.CONTROL).keyUp(Keys.ALT).keyUp(Keys.SHIFT).keyUp("]").perform();
 
-            Thread.sleep(60000);
+            Thread.sleep(6000);
             
              for (int i = 0; i < auxClientes.getRowCount(); i++) {
                 driver.findElement(By.xpath("/html/body/div[1]/div/div/div[3]/div/div[1]/div/div/div[2]/div/div[1]")).click();
@@ -376,7 +376,7 @@ public class TelaClientes extends javax.swing.JFrame {
                 Thread.sleep(1000);
                 act.sendKeys(Keys.ARROW_DOWN, Keys.ENTER).perform();
                 if (txtMidia.getText().isBlank() == false) {
-                    driver.findElement(By.cssSelector("span[data-icon='clip']")).click();
+                    driver.findElement(By.cssSelector("._1OT67 > div:nth-child(1) > div:nth-child(1) > span:nth-child(1)")).click();
                     Thread.sleep(3000);
                     driver.findElement(By.cssSelector("input[type='file']")).sendKeys(tbConfig.getModel().getValueAt(0, 5).toString());
                     Thread.sleep(3000);

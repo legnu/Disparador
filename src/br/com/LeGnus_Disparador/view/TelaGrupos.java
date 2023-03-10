@@ -378,7 +378,7 @@ public class TelaGrupos extends javax.swing.JFrame {
                 Thread.sleep(1000);
                 act.sendKeys(Keys.ARROW_DOWN, Keys.ENTER).perform();
                 if (txtMidia.getText().isBlank() == false) {
-                    driver.findElement(By.cssSelector("span[data-icon='clip']")).click();
+                    driver.findElement(By.cssSelector("._1OT67 > div:nth-child(1) > div:nth-child(1) > span:nth-child(1)']")).click();
                     Thread.sleep(3000);
                     driver.findElement(By.cssSelector("input[type='file']")).sendKeys(tbConfig.getModel().getValueAt(0, 5).toString());
                     Thread.sleep(3000);
