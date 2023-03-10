@@ -60,8 +60,8 @@ public class TelaGrupos extends javax.swing.JFrame {
             txtMidia.setText(fileName);
         }
     }
-    
-     private void Limitar() {
+
+    private void Limitar() {
         try {
             rbLimitar.setSelected(true);
             txtInicial.setEnabled(true);
@@ -89,8 +89,8 @@ public class TelaGrupos extends javax.swing.JFrame {
     }
 
     private void instanciarTbGrupos() {
-        
-        try {           
+
+        try {
             if (rbTodos.isSelected() == true) {
                 String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo from tbgrupos";
                 pst = conexao.prepareStatement(sql);
@@ -119,14 +119,14 @@ public class TelaGrupos extends javax.swing.JFrame {
                 auxGrupos.setModel(DbUtils.resultSetToTableModel(rs));
 
             }
-        }  catch (java.lang.NumberFormatException e) {
+        } catch (java.lang.NumberFormatException e) {
             if (txtInicial.getText().isBlank() || txtFinal.getText().isBlank()) {
                 JOptionPane.showMessageDialog(null, "O ID inicial/final não pode estar vazio.");
             } else {
                 JOptionPane.showMessageDialog(null, "O ID inicial/final só aceita numeros.");
             }
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
 
         }
@@ -149,30 +149,30 @@ public class TelaGrupos extends javax.swing.JFrame {
 
     private void PesquisarGrupo() {
         try {
-            
-             if(rbTodos.isSelected() == true){
-            String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo from tbgrupos where nomeGrupo like ?";
-            pst = conexao.prepareStatement(sql);
-            pst.setString(1, txtPesquisa.getText() + "%");
-            rs = pst.executeQuery();
-            tbGrupos.setModel(DbUtils.resultSetToTableModel(rs));
-            }else{
-            String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo from tbgrupos where nomeGrupo like ? and idgrupo>= ? and idgrupo <= ?";
-            pst = conexao.prepareStatement(sql);
-            pst.setString(1, txtPesquisa.getText() + "%");
-            pst.setInt(2, Integer.parseInt(txtInicial.getText()));
-            pst.setInt(3, Integer.parseInt(txtFinal.getText()));
-            rs = pst.executeQuery();
-            tbGrupos.setModel(DbUtils.resultSetToTableModel(rs));
+
+            if (rbTodos.isSelected() == true) {
+                String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo from tbgrupos where nomeGrupo like ?";
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, txtPesquisa.getText() + "%");
+                rs = pst.executeQuery();
+                tbGrupos.setModel(DbUtils.resultSetToTableModel(rs));
+            } else {
+                String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo from tbgrupos where nomeGrupo like ? and idgrupo>= ? and idgrupo <= ?";
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, txtPesquisa.getText() + "%");
+                pst.setInt(2, Integer.parseInt(txtInicial.getText()));
+                pst.setInt(3, Integer.parseInt(txtFinal.getText()));
+                rs = pst.executeQuery();
+                tbGrupos.setModel(DbUtils.resultSetToTableModel(rs));
             }
-        }   catch (java.lang.NumberFormatException e) {
+        } catch (java.lang.NumberFormatException e) {
             if (txtInicial.getText().isBlank() || txtFinal.getText().isBlank()) {
                 JOptionPane.showMessageDialog(null, "O ID inicial/final não pode estar vazio.");
             } else {
                 JOptionPane.showMessageDialog(null, "O ID inicial/final só aceita numeros.");
             }
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
 
         }
@@ -368,33 +368,34 @@ public class TelaGrupos extends javax.swing.JFrame {
             Thread.sleep(60000);
 
             for (int i = 0; i < auxGrupos.getRowCount(); i++) {
-                driver.findElement(By.xpath("//div[contains(@class,'copyable-text selectable-text')]")).click();
+                driver.findElement(By.xpath("/html/body/div[1]/div/div/div[3]/div/div[1]/div/div/div[2]/div/div[1]")).click();
+                for (int n = 0; n <= 100; n++) {
+                        act.sendKeys(Keys.DELETE).perform();
+                        act.sendKeys(Keys.BACK_SPACE).perform();
+                    }
                 Thread.sleep(1000);
                 act.sendKeys(auxGrupos.getModel().getValueAt(i, 1).toString()).perform();
                 Thread.sleep(1000);
                 act.sendKeys(Keys.ARROW_DOWN, Keys.ENTER).perform();
-                driver.findElement(By.cssSelector("div[title='Mensagem']")).click();
-                Thread.sleep(1000);
-                act.sendKeys(tbConfig.getModel().getValueAt(0, 4).toString()).perform();
                 if (txtMidia.getText().isBlank() == false) {
                     driver.findElement(By.cssSelector("span[data-icon='clip']")).click();
                     Thread.sleep(3000);
                     driver.findElement(By.cssSelector("input[type='file']")).sendKeys(tbConfig.getModel().getValueAt(0, 5).toString());
                     Thread.sleep(3000);
+                    driver.findElement(By.xpath("/html/body/div[1]/div/div/div[2]/div[2]/span/div/span/div/div/div[2]/div/div[1]/div[3]/div/div/div[2]/div[1]/div[1]/p")).click();
+                    Thread.sleep(3000);
+                    act.sendKeys(tbConfig.getModel().getValueAt(0, 4).toString()).perform();
+                    Thread.sleep(3000);
                     driver.findElement(By.cssSelector("span[data-icon='send']")).click();
                     Thread.sleep(3000);
                 } else {
+                    driver.findElement(By.cssSelector("div[title='Mensagem']")).click();
                     Thread.sleep(1000);
+                    act.sendKeys(tbConfig.getModel().getValueAt(0, 4).toString()).perform();
+                    Thread.sleep(2000);
                     act.sendKeys(Keys.ENTER).perform();
+                    Thread.sleep(3000);
                 }
-                Thread.sleep(1000);
-                driver.findElement(By.xpath("//div[contains(@class,'copyable-text selectable-text')]")).click();
-                for (int n = 0; n <= 100; n++) {
-                    act.sendKeys(Keys.DELETE).perform();
-                    act.sendKeys(Keys.BACK_SPACE).perform();
-                }
-                Thread.sleep(3000);
-                act.sendKeys(Keys.DELETE).perform();
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
@@ -589,8 +590,8 @@ public class TelaGrupos extends javax.swing.JFrame {
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(txtPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 409, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtPesquisa))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(34, 34, 34)
                 .addComponent(rbTodos)
@@ -622,7 +623,7 @@ public class TelaGrupos extends javax.swing.JFrame {
                     .addComponent(jLabel2)
                     .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 616, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 616, Short.MAX_VALUE))
         );
 
         jPanel3.setBackground(new java.awt.Color(204, 204, 204));
@@ -721,7 +722,7 @@ public class TelaGrupos extends javax.swing.JFrame {
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 290, Short.MAX_VALUE)
+            .addComponent(jScrollPane2)
         );
 
         jPanel8.setBackground(new java.awt.Color(204, 204, 204));
@@ -756,9 +757,9 @@ public class TelaGrupos extends javax.swing.JFrame {
         jPanel8Layout.setHorizontalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel8Layout.createSequentialGroup()
-                .addComponent(txtMidia, javax.swing.GroupLayout.PREFERRED_SIZE, 454, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtMidia, javax.swing.GroupLayout.DEFAULT_SIZE, 458, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnLupa, javax.swing.GroupLayout.PREFERRED_SIZE, 33, Short.MAX_VALUE))
+                .addComponent(btnLupa))
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -782,12 +783,11 @@ public class TelaGrupos extends javax.swing.JFrame {
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addGap(18, 18, 18)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnDisparar, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnDisparar, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(6, 6, 6))
                     .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18))
@@ -810,7 +810,7 @@ public class TelaGrupos extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -829,8 +829,8 @@ public class TelaGrupos extends javax.swing.JFrame {
                                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(18, 18, 18))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(18, Short.MAX_VALUE))))
+                        .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -840,7 +840,7 @@ public class TelaGrupos extends javax.swing.JFrame {
                 .addContainerGap())
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(25, 25, 25)
-                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
