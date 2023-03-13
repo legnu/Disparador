@@ -6,7 +6,10 @@ package br.com.LeGnus_Disparador.view;
 
 import br.com.LeGnus_Disparador.model.ModuloConexao;
 import br.com.LeGnus_Disparador.model.PythonJava;
+import java.awt.Robot;
 import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.security.spec.KeySpec;
@@ -20,8 +23,10 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import net.proteanit.sql.DbUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
@@ -98,24 +103,24 @@ public class TelaClientes extends javax.swing.JFrame {
     }
 
     private void PesquisarCliente() {
-                
+
         try {
-            if(rbTodos.isSelected() == true){
-            String sql = "select idcliente as NºCliente, nomecliente as Cliente,telefonecliente as Telefone from tbclientes where nomecliente like ?";
-            pst = conexao.prepareStatement(sql);
-            pst.setString(1, txtPesquisa.getText() + "%");
-            rs = pst.executeQuery();
-            tbClientes.setModel(DbUtils.resultSetToTableModel(rs));
-            }else{
-            String sql = "select idcliente as NºCliente, nomecliente as Cliente,telefonecliente as Telefone from tbclientes where nomecliente like ? and idcliente>= ? and idcliente <= ?";
-            pst = conexao.prepareStatement(sql);
-            pst.setString(1, txtPesquisa.getText() + "%");
-            pst.setInt(2, Integer.parseInt(txtInicial.getText()));
-            pst.setInt(3, Integer.parseInt(txtFinal.getText()));
-            rs = pst.executeQuery();
-            tbClientes.setModel(DbUtils.resultSetToTableModel(rs));
+            if (rbTodos.isSelected() == true) {
+                String sql = "select idcliente as NºCliente, nomecliente as Cliente,telefonecliente as Telefone from tbclientes where nomecliente like ?";
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, txtPesquisa.getText() + "%");
+                rs = pst.executeQuery();
+                tbClientes.setModel(DbUtils.resultSetToTableModel(rs));
+            } else {
+                String sql = "select idcliente as NºCliente, nomecliente as Cliente,telefonecliente as Telefone from tbclientes where nomecliente like ? and idcliente>= ? and idcliente <= ?";
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, txtPesquisa.getText() + "%");
+                pst.setInt(2, Integer.parseInt(txtInicial.getText()));
+                pst.setInt(3, Integer.parseInt(txtFinal.getText()));
+                rs = pst.executeQuery();
+                tbClientes.setModel(DbUtils.resultSetToTableModel(rs));
             }
-        }  catch (java.lang.NumberFormatException e) {
+        } catch (java.lang.NumberFormatException e) {
             if (txtInicial.getText().isBlank() || txtFinal.getText().isBlank()) {
                 JOptionPane.showMessageDialog(null, "O ID inicial/final não pode estar vazio.");
             } else {
@@ -333,7 +338,7 @@ public class TelaClientes extends javax.swing.JFrame {
         }
     }
 
-    public void disparar(){
+    public void disparar() {
         try {
             String sql = "update tbconfig set mensagem=?,midia_path=? where idconf=1";
             pst = conexao.prepareStatement(sql);
@@ -356,24 +361,35 @@ public class TelaClientes extends javax.swing.JFrame {
             driver.get("https://web.whatsapp.com/");
 
             Thread.sleep(300000);
-
             for (int n = 0; n <= 5000; n++) {
                 act.keyDown(Keys.CONTROL).keyDown(Keys.ALT).keyDown(Keys.SHIFT).keyDown("]").perform();
             }
-
             act.keyUp(Keys.CONTROL).keyUp(Keys.ALT).keyUp(Keys.SHIFT).keyUp("]").perform();
 
-            Thread.sleep(60000);
-            
-             for (int i = 0; i < auxClientes.getRowCount(); i++) {
-                driver.findElement(By.xpath("/html/body/div[1]/div/div/div[3]/div/div[1]/div/div/div[2]/div/div[1]")).click();
+            Thread.sleep(59000);
+
+            for (int i = 0; i < auxClientes.getRowCount(); i++) {
+
+                Thread.sleep(1000);
+                String mensagem = auxClientes.getModel().getValueAt(i, 1).toString();
+                driver.findElement(By.cssSelector("div[title='Caixa de texto de pesquisa']")).click();
                 for (int n = 0; n <= 100; n++) {
-                        act.sendKeys(Keys.DELETE).perform();
-                        act.sendKeys(Keys.BACK_SPACE).perform();
-                    }
+                    act.sendKeys(Keys.DELETE).perform();
+                    act.sendKeys(Keys.BACK_SPACE).perform();
+                }
                 Thread.sleep(1000);
-                act.sendKeys(auxClientes.getModel().getValueAt(i, 1).toString()).perform();
-                Thread.sleep(1000);
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                String text = mensagem;
+                StringSelection selection = new StringSelection(text);
+                clipboard.setContents(selection, null);
+                
+                for (int m = 0; m < 1; m++) {
+                act.keyDown(Keys.CONTROL).perform();
+                act.sendKeys("v");
+                act.keyUp(Keys.CONTROL).perform();
+                }
+
+                Thread.sleep(3000);
                 act.sendKeys(Keys.ARROW_DOWN, Keys.ENTER).perform();
                 Thread.sleep(6000);
                 if (txtMidia.getText().isBlank() == false) {
@@ -381,7 +397,7 @@ public class TelaClientes extends javax.swing.JFrame {
                     Thread.sleep(3000);
                     driver.findElement(By.cssSelector("input[type='file']")).sendKeys(tbConfig.getModel().getValueAt(0, 5).toString());
                     Thread.sleep(3000);
-                    driver.findElement(By.xpath("/html/body/div[1]/div/div/div[2]/div[2]/span/div/span/div/div/div[2]/div/div[1]/div[3]/div/div/div[2]/div[1]/div[1]/p")).click();
+                    driver.findElement(By.cssSelector("div[title='Digite uma mensagem']")).click();
                     Thread.sleep(3000);
                     act.sendKeys(tbConfig.getModel().getValueAt(0, 4).toString()).perform();
                     Thread.sleep(3000);

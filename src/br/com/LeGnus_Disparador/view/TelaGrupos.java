@@ -6,6 +6,8 @@ package br.com.LeGnus_Disparador.view;
 
 import br.com.LeGnus_Disparador.model.ModuloConexao;
 import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -365,16 +367,27 @@ public class TelaGrupos extends javax.swing.JFrame {
 
             act.keyUp(Keys.CONTROL).keyUp(Keys.ALT).keyUp(Keys.SHIFT).keyUp("]").perform();
 
-            Thread.sleep(60000);
+            Thread.sleep(59000);
 
             for (int i = 0; i < auxGrupos.getRowCount(); i++) {
-                driver.findElement(By.xpath("/html/body/div[1]/div/div/div[3]/div/div[1]/div/div/div[2]/div/div[1]")).click();
-                for (int n = 0; n <= 100; n++) {
-                        act.sendKeys(Keys.DELETE).perform();
-                        act.sendKeys(Keys.BACK_SPACE).perform();
-                    }
                 Thread.sleep(1000);
-                act.sendKeys(auxGrupos.getModel().getValueAt(i, 1).toString()).perform();
+                String mensagem = auxGrupos.getModel().getValueAt(i, 1).toString();
+                driver.findElement(By.cssSelector("div[title='Caixa de texto de pesquisa']")).click();
+                for (int n = 0; n <= 100; n++) {
+                    act.sendKeys(Keys.DELETE).perform();
+                    act.sendKeys(Keys.BACK_SPACE).perform();
+                }
+                Thread.sleep(1000);
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                String text = mensagem;
+                StringSelection selection = new StringSelection(text);
+                clipboard.setContents(selection, null);
+
+                for (int m = 0; m < 1; m++) {
+                    act.keyDown(Keys.CONTROL).perform();
+                    act.sendKeys("v");
+                    act.keyUp(Keys.CONTROL).perform();
+                }
                 Thread.sleep(1000);
                 act.sendKeys(Keys.ARROW_DOWN, Keys.ENTER).perform();
                 Thread.sleep(6000);
@@ -383,7 +396,7 @@ public class TelaGrupos extends javax.swing.JFrame {
                     Thread.sleep(3000);
                     driver.findElement(By.cssSelector("input[type='file']")).sendKeys(tbConfig.getModel().getValueAt(0, 5).toString());
                     Thread.sleep(3000);
-                    driver.findElement(By.xpath("/html/body/div[1]/div/div/div[2]/div[2]/span/div/span/div/div/div[2]/div/div[1]/div[3]/div/div/div[2]/div[1]/div[1]/p")).click();
+                     driver.findElement(By.cssSelector("div[title='Digite uma mensagem']")).click();
                     Thread.sleep(3000);
                     act.sendKeys(tbConfig.getModel().getValueAt(0, 4).toString()).perform();
                     Thread.sleep(3000);
