@@ -383,11 +383,9 @@ public class TelaGrupos extends javax.swing.JFrame {
                 StringSelection selection = new StringSelection(text);
                 clipboard.setContents(selection, null);
 
-                for (int m = 0; m < 1; m++) {
-                    act.keyDown(Keys.CONTROL).perform();
-                    act.sendKeys("v");
-                    act.keyUp(Keys.CONTROL).perform();
-                }
+                act.keyDown(Keys.CONTROL).keyDown("v").perform();
+                act.keyUp(Keys.CONTROL).keyUp("v").perform(); 
+                
                 Thread.sleep(1000);
                 act.sendKeys(Keys.ARROW_DOWN, Keys.ENTER).perform();
                 Thread.sleep(6000);

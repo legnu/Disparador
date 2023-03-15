@@ -360,13 +360,13 @@ public class TelaClientes extends javax.swing.JFrame {
 
             driver.get("https://web.whatsapp.com/");
 
-            Thread.sleep(300000);
+            Thread.sleep(30000);
             for (int n = 0; n <= 5000; n++) {
                 act.keyDown(Keys.CONTROL).keyDown(Keys.ALT).keyDown(Keys.SHIFT).keyDown("]").perform();
             }
             act.keyUp(Keys.CONTROL).keyUp(Keys.ALT).keyUp(Keys.SHIFT).keyUp("]").perform();
 
-            Thread.sleep(59000);
+            Thread.sleep(10000);
 
             for (int i = 0; i < auxClientes.getRowCount(); i++) {
 
@@ -383,11 +383,8 @@ public class TelaClientes extends javax.swing.JFrame {
                 StringSelection selection = new StringSelection(text);
                 clipboard.setContents(selection, null);
                 
-                for (int m = 0; m < 1; m++) {
-                act.keyDown(Keys.CONTROL).perform();
-                act.sendKeys("v");
-                act.keyUp(Keys.CONTROL).perform();
-                }
+                act.keyDown(Keys.CONTROL).keyDown("v").perform();
+                act.keyUp(Keys.CONTROL).keyUp("v").perform();        
 
                 Thread.sleep(3000);
                 act.sendKeys(Keys.ARROW_DOWN, Keys.ENTER).perform();
