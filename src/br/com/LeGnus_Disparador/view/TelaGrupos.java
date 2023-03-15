@@ -386,7 +386,7 @@ public class TelaGrupos extends javax.swing.JFrame {
                 act.keyDown(Keys.CONTROL).keyDown("v").perform();
                 act.keyUp(Keys.CONTROL).keyUp("v").perform(); 
                 
-                Thread.sleep(1000);
+                Thread.sleep(2000);
                 act.sendKeys(Keys.ARROW_DOWN, Keys.ENTER).perform();
                 Thread.sleep(6000);
                 if (txtMidia.getText().isBlank() == false) {
