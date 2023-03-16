@@ -10,6 +10,7 @@ import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.security.spec.KeySpec;
@@ -341,6 +342,7 @@ public class TelaClientes extends javax.swing.JFrame {
     public void disparar() {
         try {
             String sql = "update tbconfig set mensagem=?,midia_path=? where idconf=1";
+            
             pst = conexao.prepareStatement(sql);
             pst.setString(1, taMensagem.getText());
             pst.setString(2, txtMidia.getText());
@@ -366,27 +368,31 @@ public class TelaClientes extends javax.swing.JFrame {
             }
             act.keyUp(Keys.CONTROL).keyUp(Keys.ALT).keyUp(Keys.SHIFT).keyUp("]").perform();
 
-            Thread.sleep(59000);
+            Thread.sleep(590000);
 
             for (int i = 0; i < auxClientes.getRowCount(); i++) {
 
                 Thread.sleep(1000);
+
                 String mensagem = auxClientes.getModel().getValueAt(i, 1).toString();
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                String text = mensagem;
+                StringSelection selection = new StringSelection(text);
+                clipboard.setContents(selection, null);
+
                 driver.findElement(By.cssSelector("div[title='Caixa de texto de pesquisa']")).click();
                 for (int n = 0; n <= 100; n++) {
                     act.sendKeys(Keys.DELETE).perform();
                     act.sendKeys(Keys.BACK_SPACE).perform();
                 }
-                Thread.sleep(1000);
-                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                String text = mensagem;
-                StringSelection selection = new StringSelection(text);
-                clipboard.setContents(selection, null);
                 
-                act.keyDown(Keys.CONTROL).keyDown("v").perform();
-                act.keyUp(Keys.CONTROL).keyUp("v").perform();        
-
                 Thread.sleep(2000);
+                
+                act.keyDown(Keys.CONTROL).perform();
+                act.sendKeys( "v").perform();
+                act.keyUp(Keys.CONTROL).perform();                 
+                
+                Thread.sleep(1000);
                 act.sendKeys(Keys.ARROW_DOWN, Keys.ENTER).perform();
                 Thread.sleep(6000);
                 if (txtMidia.getText().isBlank() == false) {

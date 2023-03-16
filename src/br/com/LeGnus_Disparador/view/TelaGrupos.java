@@ -372,21 +372,23 @@ public class TelaGrupos extends javax.swing.JFrame {
             for (int i = 0; i < auxGrupos.getRowCount(); i++) {
                 Thread.sleep(1000);
                 String mensagem = auxGrupos.getModel().getValueAt(i, 1).toString();
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                String text = mensagem;
+                StringSelection selection = new StringSelection(text);
+                clipboard.setContents(selection, null);
+                
                 driver.findElement(By.cssSelector("div[title='Caixa de texto de pesquisa']")).click();
                 for (int n = 0; n <= 100; n++) {
                     act.sendKeys(Keys.DELETE).perform();
                     act.sendKeys(Keys.BACK_SPACE).perform();
                 }
-                Thread.sleep(1000);
-                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                String text = mensagem;
-                StringSelection selection = new StringSelection(text);
-                clipboard.setContents(selection, null);
+                Thread.sleep(2000);                
 
-                act.keyDown(Keys.CONTROL).keyDown("v").perform();
-                act.keyUp(Keys.CONTROL).keyUp("v").perform(); 
+                act.keyDown(Keys.CONTROL).perform();
+                act.sendKeys( "v").perform();
+                act.keyUp(Keys.CONTROL).perform(); 
                 
-                Thread.sleep(2000);
+                Thread.sleep(1000);
                 act.sendKeys(Keys.ARROW_DOWN, Keys.ENTER).perform();
                 Thread.sleep(6000);
                 if (txtMidia.getText().isBlank() == false) {
