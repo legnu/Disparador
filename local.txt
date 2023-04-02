@@ -18,14 +18,21 @@ midia_path text);
 create table tbgrupos(
 idgrupo MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 nomeGrupo text,
-conjunto int
+conjunto varchar(50)
 );
 
 create table tbclientes(
 idcliente MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 nomecliente text,
 telefonecliente varchar(18),
-conjuntocliente int
+conjuntocliente varchar(50)
+);
+
+create table tbmensagens(
+idmensagem MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
+mensagem text,
+titulo varchar(50),
+midia text
 );
 
 insert into tbconfig(idconf,mensagem,midia_path) values(1,"","");
@@ -34,5 +41,8 @@ insert into tbvale(idsenha,senha) values(1,"vazio");
 describe tbvale;
 
 select * from tbvale;
+select * from tbclientes;
 select * from tbconfig;
+
+select mensagem, midia from tbmensagens where  titulo = 'teste2' or titulo = 'teste';
 

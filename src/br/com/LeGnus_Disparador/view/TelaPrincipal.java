@@ -35,6 +35,12 @@ public class TelaPrincipal extends javax.swing.JFrame {
         grupos.setVisible(true);
         this.dispose();
     }
+    
+    private void telaDisparador() {
+        TelaDisparo disparo = new TelaDisparo();
+        disparo.setVisible(true);
+        this.dispose();
+    }
 
     public TelaPrincipal() {
         initComponents();
@@ -59,6 +65,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         btnGrupos = new javax.swing.JButton();
         btnClientes = new javax.swing.JButton();
+        btnDisparar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Legnu's_Disparador - TelaPrincipal");
@@ -74,7 +81,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         btnGrupos.setBackground(new java.awt.Color(102, 102, 102));
         btnGrupos.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
         btnGrupos.setForeground(new java.awt.Color(255, 255, 255));
-        btnGrupos.setText("Usar o Disparador para Grupos.");
+        btnGrupos.setText("Cadastrar Grupos");
         btnGrupos.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnGruposActionPerformed(evt);
@@ -84,10 +91,20 @@ public class TelaPrincipal extends javax.swing.JFrame {
         btnClientes.setBackground(new java.awt.Color(102, 102, 102));
         btnClientes.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
         btnClientes.setForeground(new java.awt.Color(255, 255, 255));
-        btnClientes.setText("Usar o Disparador para Clientes.");
+        btnClientes.setText("Cadastrar Clientes");
         btnClientes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnClientesActionPerformed(evt);
+            }
+        });
+
+        btnDisparar.setBackground(new java.awt.Color(102, 102, 102));
+        btnDisparar.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
+        btnDisparar.setForeground(new java.awt.Color(255, 255, 255));
+        btnDisparar.setText("Disparador");
+        btnDisparar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDispararActionPerformed(evt);
             }
         });
 
@@ -95,40 +112,38 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 493, Short.MAX_VALUE)
-                .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnGrupos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnClientes, javax.swing.GroupLayout.DEFAULT_SIZE, 365, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(24, 24, 24)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnDisparar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 523, Short.MAX_VALUE)
+                    .addComponent(btnGrupos, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnClientes, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(24, 24, 24))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(32, 32, 32)
-                .addComponent(jButton1)
+                .addContainerGap()
+                .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
                 .addGap(24, 24, 24)
+                .addComponent(btnDisparar, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(40, 40, 40)
                 .addComponent(btnClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(28, 28, 28)
+                .addGap(40, 40, 40)
                 .addComponent(btnGrupos, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(32, 32, 32))
+                .addGap(24, 24, 24))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -144,6 +159,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
         // TODO add your handling code here:
         telaGrupos();
     }//GEN-LAST:event_btnGruposActionPerformed
+
+    private void btnDispararActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDispararActionPerformed
+        // TODO add your handling code here:
+        telaDisparador();
+    }//GEN-LAST:event_btnDispararActionPerformed
 
     /**
      * @param args the command line arguments
@@ -182,6 +202,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnClientes;
+    private javax.swing.JButton btnDisparar;
     private javax.swing.JButton btnGrupos;
     private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
