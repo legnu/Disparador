@@ -121,10 +121,10 @@ public class TelaDisparo extends javax.swing.JFrame {
             
             for (int i = 0; tbCategoriaSelecionada.getRowCount() > i; i++) {
                 if (i == 0) {
-                    ResultadoCliente = " conjunto = " + "'" + tbCategoriaSelecionada.getModel().getValueAt(i, 0).toString() + "'";
+                    ResultadoCliente = " conjuntocliente = " + "'" + tbCategoriaSelecionada.getModel().getValueAt(i, 0).toString() + "'";
                     listaCliente = ResultadoCliente;
                 } else {
-                    ResultadoCliente = " or conjunto = " + "'" + tbCategoriaSelecionada.getModel().getValueAt(i, 0).toString() + "'";
+                    ResultadoCliente = " or conjuntocliente = " + "'" + tbCategoriaSelecionada.getModel().getValueAt(i, 0).toString() + "'";
                     listaCliente = listaCliente + ResultadoCliente;
                 }
             }
