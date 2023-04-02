@@ -40,6 +40,7 @@ public class TelaDisparo extends javax.swing.JFrame {
     String Categoria;
     String Mensagem;
     String lista;
+    String listaCliente;
     String listaMensagem;
 
     /**
@@ -106,6 +107,7 @@ public class TelaDisparo extends javax.swing.JFrame {
     public void montarLista() {
         try {
             String Resultado;
+            String ResultadoCliente;
 
             for (int i = 0; tbCategoriaSelecionada.getRowCount() > i; i++) {
                 if (i == 0) {
@@ -114,6 +116,16 @@ public class TelaDisparo extends javax.swing.JFrame {
                 } else {
                     Resultado = " or conjunto = " + "'" + tbCategoriaSelecionada.getModel().getValueAt(i, 0).toString() + "'";
                     lista = lista + Resultado;
+                }
+            }
+            
+            for (int i = 0; tbCategoriaSelecionada.getRowCount() > i; i++) {
+                if (i == 0) {
+                    ResultadoCliente = " conjunto = " + "'" + tbCategoriaSelecionada.getModel().getValueAt(i, 0).toString() + "'";
+                    listaCliente = ResultadoCliente;
+                } else {
+                    ResultadoCliente = " or conjunto = " + "'" + tbCategoriaSelecionada.getModel().getValueAt(i, 0).toString() + "'";
+                    listaCliente = listaCliente + ResultadoCliente;
                 }
             }
 
@@ -162,7 +174,7 @@ public class TelaDisparo extends javax.swing.JFrame {
 
             } else if (rbLimitarID.isSelected() == false && rbCliente.isSelected() == true) {
                 if (rbLimitarCategoria.isSelected() == true) {
-                    String sql = "select idcliente as NºCliente, nomeCliente as Cliente,conjuntocliente as Categoria from tbclientes where" + lista;
+                    String sql = "select idcliente as NºCliente, nomeCliente as Cliente,conjuntocliente as Categoria from tbclientes where" + listaCliente;
                     pst = conexao.prepareStatement(sql);
                     rs = pst.executeQuery();
                     tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
@@ -194,7 +206,7 @@ public class TelaDisparo extends javax.swing.JFrame {
 
             } else if (rbLimitarID.isSelected() == true && rbCliente.isSelected() == true) {
                 if (rbLimitarCategoria.isSelected() == true) {
-                    String sql = "select idcliente as NºCliente, nomeCliente as Cliente,conjuntocliente as Categoria from tbclientes where" + lista + " and idcliente>= ? and idcliente <= ?";
+                    String sql = "select idcliente as NºCliente, nomeCliente as Cliente,conjuntocliente as Categoria from tbclientes where" + listaCliente + " and idcliente>= ? and idcliente <= ?";
                     pst = conexao.prepareStatement(sql);
                     pst.setInt(1, Integer.parseInt(txtInicial.getText()));
                     pst.setInt(2, Integer.parseInt(txtFinal.getText()));
