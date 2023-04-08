@@ -248,8 +248,8 @@ public class TelaDisparo extends javax.swing.JFrame {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
             tbConfig.setModel(DbUtils.resultSetToTableModel(rs));
-            txtExecutavel.setText(tbConfig.getModel().getValueAt(0, 1).toString());
-            txtBinario.setText(tbConfig.getModel().getValueAt(0, 2).toString());
+            txtBinario.setText(tbConfig.getModel().getValueAt(0, 1).toString());
+            txtExecutavel.setText(tbConfig.getModel().getValueAt(0, 2).toString());            
             txtPerfil.setText(tbConfig.getModel().getValueAt(0, 3).toString());
 
         } catch (Exception e) {
