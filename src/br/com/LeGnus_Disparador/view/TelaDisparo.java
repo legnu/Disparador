@@ -544,10 +544,10 @@ public class TelaDisparo extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         txtBinario = new javax.swing.JTextField();
-        jButton3 = new javax.swing.JButton();
+        btnBinario = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         txtExecutavel = new javax.swing.JTextField();
-        jButton2 = new javax.swing.JButton();
+        btnExecutavel = new javax.swing.JButton();
         jPanel9 = new javax.swing.JPanel();
         txtPerfil = new javax.swing.JTextField();
         jPanel13 = new javax.swing.JPanel();
@@ -694,7 +694,12 @@ public class TelaDisparo extends javax.swing.JFrame {
         txtBinario.setEditable(false);
         txtBinario.setEnabled(false);
 
-        jButton3.setText("🔍");
+        btnBinario.setText("🔍");
+        btnBinario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBinarioActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -703,14 +708,14 @@ public class TelaDisparo extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addComponent(txtBinario)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnBinario, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(txtBinario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(btnBinario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel5.setBackground(new java.awt.Color(204, 204, 204));
@@ -729,7 +734,12 @@ public class TelaDisparo extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setText("🔍");
+        btnExecutavel.setText("🔍");
+        btnExecutavel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExecutavelActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -738,14 +748,14 @@ public class TelaDisparo extends javax.swing.JFrame {
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addComponent(txtExecutavel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnExecutavel, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(txtExecutavel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(btnExecutavel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jPanel9.setBackground(new java.awt.Color(204, 204, 204));
@@ -1322,6 +1332,16 @@ public class TelaDisparo extends javax.swing.JFrame {
         principal.setVisible(true);
     }//GEN-LAST:event_formWindowClosed
 
+    private void btnExecutavelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExecutavelActionPerformed
+        // TODO add your handling code here:
+        buscarExecutavel();
+    }//GEN-LAST:event_btnExecutavelActionPerformed
+
+    private void btnBinarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBinarioActionPerformed
+        // TODO add your handling code here:
+        buscarBinario();
+    }//GEN-LAST:event_btnBinarioActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1359,13 +1379,13 @@ public class TelaDisparo extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup alvo;
+    private javax.swing.JButton btnBinario;
     private javax.swing.JButton btnEnviarCategoria;
     private javax.swing.JButton btnEnviarMensagem;
+    private javax.swing.JButton btnExecutavel;
     private javax.swing.JButton btnRemoverCategoria;
     private javax.swing.JButton btnRemoverMensagem;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
