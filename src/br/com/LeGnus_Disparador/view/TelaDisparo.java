@@ -500,9 +500,6 @@ public class TelaDisparo extends javax.swing.JFrame {
                 act.sendKeys(Keys.ARROW_DOWN, Keys.ENTER).perform();
                 Thread.sleep(6000);
 
-                WebElement element = driver.findElement(By.cssSelector("span[data-testid='conversation-info-header-chat-title']"));
-
-                if (tbExibicao.getModel().getValueAt(i, 1).toString().equals(element.getAttribute("innerText")) == true) {
                     for (int o = 0; o < tbAux.getRowCount(); o++) {
                         if (tbAux.getModel().getValueAt(o, 1).toString().isBlank() == false) {
                             Thread.sleep(2000);
@@ -538,27 +535,7 @@ public class TelaDisparo extends javax.swing.JFrame {
                             Thread.sleep(2000);
                         }
                     }
-                } else {                    
-                    try {
-                        String tipo;
-                        
-                        if(rbGrupo.isSelected() == true){
-                            tipo = "Grupo";
-                        }else{
-                            tipo = "Cliente";
-                        }                            
-                        
-                        String sql = "insert into tbErro(nomeInserido,nomeEsperado,categoria) values(?,?,?)";
-                        pst = conexao.prepareStatement(sql);
-                        pst.setString(1, tbExibicao.getModel().getValueAt(i, 1).toString());
-                        pst.setString(2, element.getAttribute("innerText"));
-                        pst.setString(3, tipo);
-                        pst.executeUpdate();                           
-                    } catch (Exception e) {
-                        JOptionPane.showMessageDialog(null, e);
-
-                    }
-                }
+                
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
@@ -597,7 +574,6 @@ public class TelaDisparo extends javax.swing.JFrame {
         tbExibicao = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         txtPesquisa = new javax.swing.JTextField();
-        btnOcorrencias = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         txtBinario = new javax.swing.JTextField();
@@ -732,16 +708,6 @@ public class TelaDisparo extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 568, Short.MAX_VALUE))
         );
-
-        btnOcorrencias.setBackground(new java.awt.Color(153, 0, 0));
-        btnOcorrencias.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        btnOcorrencias.setForeground(new java.awt.Color(255, 255, 255));
-        btnOcorrencias.setText("Ocorrencias");
-        btnOcorrencias.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnOcorrenciasActionPerformed(evt);
-            }
-        });
 
         jPanel3.setBackground(new java.awt.Color(204, 204, 204));
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Parametros", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
@@ -1257,10 +1223,7 @@ public class TelaDisparo extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(btnOcorrencias, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(28, 28, 28)
-                        .addComponent(btnDisparar, javax.swing.GroupLayout.PREFERRED_SIZE, 357, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(btnDisparar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -1271,9 +1234,7 @@ public class TelaDisparo extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnOcorrencias, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnDisparar, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnDisparar, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(6, 6, 6))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1410,13 +1371,6 @@ public class TelaDisparo extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtExecutavelMouseClicked
 
-    private void btnOcorrenciasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOcorrenciasActionPerformed
-        // TODO add your handling code here:
-        TelaOcorrencia Ocorrencia = new TelaOcorrencia();
-        Ocorrencia.setVisible(true);
-        
-    }//GEN-LAST:event_btnOcorrenciasActionPerformed
-
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         // TODO add your handling code here:
         TelaPrincipal principal = new TelaPrincipal();
@@ -1486,7 +1440,6 @@ public class TelaDisparo extends javax.swing.JFrame {
     private javax.swing.JButton btnEnviarCategoria;
     private javax.swing.JButton btnEnviarMensagem;
     private javax.swing.JButton btnExecutavel;
-    private javax.swing.JButton btnOcorrencias;
     private javax.swing.JButton btnPerfil;
     private javax.swing.JButton btnRemoverCategoria;
     private javax.swing.JButton btnRemoverMensagem;
