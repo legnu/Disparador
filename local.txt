@@ -15,6 +15,9 @@ firefoxProfile_path text,
 mensagem text,
 midia_path text);
 
+select * from tbconfig;
+
+
 create table tbgrupos(
 idgrupo MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 nomeGrupo text,
@@ -35,12 +38,21 @@ titulo varchar(50),
 midia text
 );
 
+create table tbErro(
+idErro MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
+nomeInserido text,
+nomeEsperado text,
+categoria text
+);
+
 insert into tbconfig(idconf,mensagem,midia_path) values(1,"","");
 insert into tbvale(idsenha,senha) values(1,"vazio");
 
 describe tbvale;
 
+
 select * from tbvale;
+select * from tbErro;
 select * from tbclientes;
 select * from tbconfig;
 
