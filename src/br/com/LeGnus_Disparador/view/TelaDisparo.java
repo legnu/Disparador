@@ -505,16 +505,17 @@ public class TelaDisparo extends javax.swing.JFrame {
                 if (tbExibicao.getModel().getValueAt(i, 1).toString().equals(element.getAttribute("innerText")) == true) {
                     for (int o = 0; o < tbAux.getRowCount(); o++) {
                         if (tbAux.getModel().getValueAt(o, 1).toString().isBlank() == false) {
-                            Thread.sleep(3000);
-                            driver.findElement(By.cssSelector("span[data-icon='clip']")).click();
-                            Thread.sleep(3000);
-                            driver.findElement(By.cssSelector("input[type='file']")).sendKeys(tbAux.getModel().getValueAt(o, 1).toString());
-                            Thread.sleep(3000);
-                            driver.findElement(By.cssSelector("div[title='Mensagem']")).click();
                             Thread.sleep(2000);
-
+                            driver.findElement(By.cssSelector("span[data-icon='clip']")).click();
+                            Thread.sleep(2000);
+                            driver.findElement(By.cssSelector("input[type='file']")).sendKeys(tbAux.getModel().getValueAt(o, 1).toString());
+                            Thread.sleep(8000);
+                            driver.findElement(By.cssSelector("div[title='Mensagem']")).click();
+                            Thread.sleep(1000);
+                            
                             StringSelection mansagem = new StringSelection(tbAux.getModel().getValueAt(o, 0).toString());
                             clipboard.setContents(mansagem, null);
+                            
                             Thread.sleep(1000);
                             act.keyDown(Keys.CONTROL).perform();
                             act.sendKeys("v").perform();
@@ -522,7 +523,7 @@ public class TelaDisparo extends javax.swing.JFrame {
 
                             Thread.sleep(2000);
                             driver.findElement(By.cssSelector("span[data-icon='send']")).click();
-                            Thread.sleep(3000);
+                            Thread.sleep(2000);
                         } else {
                             driver.findElement(By.cssSelector("div[title='Mensagem']")).click();
                             Thread.sleep(1000);
@@ -534,7 +535,7 @@ public class TelaDisparo extends javax.swing.JFrame {
                             act.keyUp(Keys.CONTROL).perform();
                             Thread.sleep(2000);
                             act.sendKeys(Keys.ENTER).perform();
-                            Thread.sleep(3000);
+                            Thread.sleep(2000);
                         }
                     }
                 } else {                    
