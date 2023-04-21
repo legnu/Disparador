@@ -5,7 +5,6 @@
 package br.com.LeGnus_Disparador.view;
 
 import br.com.LeGnus_Disparador.model.ModuloConexao;
-import static com.google.common.collect.Multimaps.index;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -13,21 +12,15 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.concurrent.TimeUnit;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 import net.proteanit.sql.DbUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.firefox.ProfilesIni;
 import org.openqa.selenium.interactions.Actions;
 
@@ -61,41 +54,66 @@ public class TelaDisparo extends javax.swing.JFrame {
     }
 
     public void buscarExecutavel() {
-        JFileChooser arquivo = new JFileChooser();
-        arquivo.setDialogTitle("EXECUTAVEL");
-        arquivo.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        int op = arquivo.showOpenDialog(this);
-        if (op == JFileChooser.APPROVE_OPTION) {
-            File file = new File("");
-            file = arquivo.getSelectedFile();
-            String fileName = file.getAbsolutePath();
-            txtExecutavel.setText(fileName);
+        try {
+            JFileChooser arquivo = new JFileChooser();
+            arquivo.setDialogTitle("EXECUTAVEL");
+            arquivo.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            int op = arquivo.showOpenDialog(this);
+            if (op == JFileChooser.APPROVE_OPTION) {
+                File file = new File("");
+                file = arquivo.getSelectedFile();
+                String fileName = file.getAbsolutePath();
+                txtExecutavel.setText(fileName);
+                String sqo = "update tbconfig set geckoExe_path=? where idconf=1";
+                pst = conexao.prepareStatement(sqo);
+                pst.setString(1, txtExecutavel.getText());
+                pst.executeUpdate();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
         }
     }
 
     public void buscarBinario() {
-        JFileChooser arquivo = new JFileChooser();
-        arquivo.setDialogTitle("BINARIO");
-        arquivo.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        int op = arquivo.showOpenDialog(this);
-        if (op == JFileChooser.APPROVE_OPTION) {
-            File file = new File("");
-            file = arquivo.getSelectedFile();
-            String fileName = file.getAbsolutePath();
-            txtBinario.setText(fileName);
+        try {
+            JFileChooser arquivo = new JFileChooser();
+            arquivo.setDialogTitle("BINARIO");
+            arquivo.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            int op = arquivo.showOpenDialog(this);
+            if (op == JFileChooser.APPROVE_OPTION) {
+                File file = new File("");
+                file = arquivo.getSelectedFile();
+                String fileName = file.getAbsolutePath();
+                txtBinario.setText(fileName);
+                String sqo = "update tbconfig set firefoxBinary_path=? where idconf=1";
+                pst = conexao.prepareStatement(sqo);
+                pst.setString(1, txtBinario.getText());
+                pst.executeUpdate();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
         }
+
     }
 
     public void buscarPerfil() {
-        JFileChooser arquivo = new JFileChooser();
-        arquivo.setDialogTitle("PERFIL");
-        arquivo.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        int op = arquivo.showOpenDialog(this);
-        if (op == JFileChooser.APPROVE_OPTION) {
-            File file = new File("");
-            file = arquivo.getSelectedFile();
-            String fileName = file.getAbsolutePath();
-            txtPerfil.setText(fileName);
+        try {
+            JFileChooser arquivo = new JFileChooser();
+            arquivo.setDialogTitle("PERFIL");
+            arquivo.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+            int op = arquivo.showOpenDialog(this);
+            if (op == JFileChooser.APPROVE_OPTION) {
+                File file = new File("");
+                file = arquivo.getSelectedFile();
+                String fileName = file.getAbsolutePath();
+                txtPerfil.setText(fileName);
+                String sqo = "update tbconfig set firefoxProfile_path=? where idconf=1";
+                pst = conexao.prepareStatement(sqo);
+                pst.setString(1, txtPerfil.getText());
+                pst.executeUpdate();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
         }
     }
 
@@ -437,15 +455,7 @@ public class TelaDisparo extends javax.swing.JFrame {
     }
 
     public void disparar() {
-        try {
-
-            String sqo = "update tbconfig set firefoxBinary_path=?,geckoExe_path=?,firefoxProfile_path=? where idconf=1";
-            pst = conexao.prepareStatement(sqo);
-            pst.setString(1, txtBinario.getText());
-            pst.setString(2, txtExecutavel.getText());
-            pst.setString(3, txtPerfil.getText());
-            pst.executeUpdate();
-
+        try {            
             String sqy = "select mensagem, midia from tbmensagens where " + listaMensagem;
             pst = conexao.prepareStatement(sqy);
             rs = pst.executeQuery();
@@ -460,8 +470,7 @@ public class TelaDisparo extends javax.swing.JFrame {
             options.addArguments("--remote-allow-origins=*");
             options.addArguments("chrome.switches", "--disable-extensions");
             options.addArguments("--user-data-dir=" + tbConfig.getModel().getValueAt(0, 3).toString());
-
-            ProfilesIni profini = new ProfilesIni();
+            
             options.setBinary(tbConfig.getModel().getValueAt(0, 1).toString());
 
             WebDriver driver = new ChromeDriver(options);
@@ -478,11 +487,15 @@ public class TelaDisparo extends javax.swing.JFrame {
             act.keyUp(Keys.CONTROL).keyUp(Keys.ALT).keyUp(Keys.SHIFT).keyUp("]").perform();
 
             Thread.sleep(59000);
+            
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            StringSelection selection;
+            StringSelection mensagemDisparo;
 
             for (int i = 0; i < tbExibicao.getRowCount(); i++) {
                 Thread.sleep(1000);
-                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                StringSelection selection = new StringSelection(tbExibicao.getModel().getValueAt(i, 1).toString());
+                
+                selection = new StringSelection(tbExibicao.getModel().getValueAt(i, 1).toString());
                 clipboard.setContents(selection, null);
 
                 driver.findElement(By.cssSelector("div[title='Caixa de texto de pesquisa']")).click();
@@ -500,42 +513,42 @@ public class TelaDisparo extends javax.swing.JFrame {
                 act.sendKeys(Keys.ARROW_DOWN, Keys.ENTER).perform();
                 Thread.sleep(6000);
 
-                    for (int o = 0; o < tbAux.getRowCount(); o++) {
-                        if (tbAux.getModel().getValueAt(o, 1).toString().isBlank() == false) {
-                            Thread.sleep(2000);
-                            driver.findElement(By.cssSelector("span[data-icon='clip']")).click();
-                            Thread.sleep(2000);
-                            driver.findElement(By.cssSelector("input[type='file']")).sendKeys(tbAux.getModel().getValueAt(o, 1).toString());
-                            Thread.sleep(8000);
-                            driver.findElement(By.cssSelector("div[title='Mensagem']")).click();
-                            Thread.sleep(1000);
-                            
-                            StringSelection mansagem = new StringSelection(tbAux.getModel().getValueAt(o, 0).toString());
-                            clipboard.setContents(mansagem, null);
-                            
-                            Thread.sleep(1000);
-                            act.keyDown(Keys.CONTROL).perform();
-                            act.sendKeys("v").perform();
-                            act.keyUp(Keys.CONTROL).perform();
+                for (int o = 0; o < tbAux.getRowCount(); o++) {
+                    if (tbAux.getModel().getValueAt(o, 1).toString().isBlank() == false) {
+                        Thread.sleep(2000);
+                        driver.findElement(By.cssSelector("span[data-icon='clip']")).click();
+                        Thread.sleep(2000);
+                        driver.findElement(By.cssSelector("input[type='file']")).sendKeys(tbAux.getModel().getValueAt(o, 1).toString());
+                        Thread.sleep(8000);
+                        driver.findElement(By.cssSelector("div[title='Mensagem']")).click();
+                        Thread.sleep(1000);
 
-                            Thread.sleep(2000);
-                            driver.findElement(By.cssSelector("span[data-icon='send']")).click();
-                            Thread.sleep(2000);
-                        } else {
-                            driver.findElement(By.cssSelector("div[title='Mensagem']")).click();
-                            Thread.sleep(1000);
-                            StringSelection mansagem = new StringSelection(tbAux.getModel().getValueAt(o, 0).toString());
-                            clipboard.setContents(mansagem, null);
-                            Thread.sleep(1000);
-                            act.keyDown(Keys.CONTROL).perform();
-                            act.sendKeys("v").perform();
-                            act.keyUp(Keys.CONTROL).perform();
-                            Thread.sleep(2000);
-                            act.sendKeys(Keys.ENTER).perform();
-                            Thread.sleep(2000);
-                        }
+                        mensagemDisparo = new StringSelection(tbAux.getModel().getValueAt(o, 0).toString());
+                        clipboard.setContents(mensagemDisparo, null);
+
+                        Thread.sleep(1000);
+                        act.keyDown(Keys.CONTROL).perform();
+                        act.sendKeys("v").perform();
+                        act.keyUp(Keys.CONTROL).perform();
+
+                        Thread.sleep(2000);
+                        driver.findElement(By.cssSelector("span[data-icon='send']")).click();
+                        Thread.sleep(2000);
+                    } else {
+                        driver.findElement(By.cssSelector("div[title='Mensagem']")).click();
+                        Thread.sleep(1000);
+                        mensagemDisparo = new StringSelection(tbAux.getModel().getValueAt(o, 0).toString());
+                        clipboard.setContents(mensagemDisparo, null);
+                        Thread.sleep(1000);
+                        act.keyDown(Keys.CONTROL).perform();
+                        act.sendKeys("v").perform();
+                        act.keyUp(Keys.CONTROL).perform();
+                        Thread.sleep(2000);
+                        act.sendKeys(Keys.ENTER).perform();
+                        Thread.sleep(2000);
                     }
-                
+                }
+
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
