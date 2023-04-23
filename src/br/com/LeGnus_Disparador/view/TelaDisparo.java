@@ -19,9 +19,9 @@ import net.proteanit.sql.DbUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.ProfilesIni;
 import org.openqa.selenium.interactions.Actions;
 
 /**
@@ -38,6 +38,13 @@ public class TelaDisparo extends javax.swing.JFrame {
     String lista;
     String listaCliente;
     String listaMensagem;
+    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+    StringSelection buscaDisparo;
+    StringSelection mensagemDisparo;
+    WebElement Certificar;
+    WebDriver driver;
+    Actions act;
+    int aux;
 
     /**
      * Creates new form TelaDisparo
@@ -182,9 +189,11 @@ public class TelaDisparo extends javax.swing.JFrame {
                     Resultado = " or titulo = " + "'" + tbMensagemSelecionada.getModel().getValueAt(i, 0).toString() + "'";
                     listaMensagem = listaMensagem + Resultado;
                 }
-            }
-
-            instanciarTabela();
+            }            
+            String sqy = "select mensagem, midia from tbmensagens where " + listaMensagem;
+            pst = conexao.prepareStatement(sqy);
+            rs = pst.executeQuery();
+            tbAux.setModel(DbUtils.resultSetToTableModel(rs));
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
             Limpar();
@@ -454,13 +463,100 @@ public class TelaDisparo extends javax.swing.JFrame {
 
     }
 
-    public void disparar() {
-        try {            
-            String sqy = "select mensagem, midia from tbmensagens where " + listaMensagem;
-            pst = conexao.prepareStatement(sqy);
-            rs = pst.executeQuery();
-            tbAux.setModel(DbUtils.resultSetToTableModel(rs));
+    private void mensagemDisparo() {
+        try {
+            
+            Thread.sleep(1000);
+            driver.findElement(By.cssSelector("span[title='" + tbExibicao.getModel().getValueAt(aux, 1).toString() + "']")).click();
+            Thread.sleep(6000);
+            
+            System.out.println(tbAux.getRowCount());
+            
+            for (int o = 0; o < tbAux.getRowCount(); o++) {
+                if (tbAux.getModel().getValueAt(o, 1).toString().isBlank() == false) {
+                    Thread.sleep(2000);
+                    driver.findElement(By.cssSelector("span[data-icon='clip']")).click();
+                    Thread.sleep(2000);
+                    driver.findElement(By.cssSelector("input[type='file']")).sendKeys(tbAux.getModel().getValueAt(o, 1).toString());
+                    Thread.sleep(8000);
+                    driver.findElement(By.cssSelector("div[title='Mensagem']")).click();
+                    Thread.sleep(1000);
 
+                    mensagemDisparo = new StringSelection(tbAux.getModel().getValueAt(o, 0).toString());
+                    clipboard.setContents(mensagemDisparo, null);
+
+                    Thread.sleep(1000);
+                    act.keyDown(Keys.CONTROL).perform();
+                    act.sendKeys("v").perform();
+                    act.keyUp(Keys.CONTROL).perform();
+
+                    Thread.sleep(2000);
+                    driver.findElement(By.cssSelector("span[data-icon='send']")).click();
+                    Thread.sleep(2000);
+                } else {
+                    driver.findElement(By.cssSelector("div[title='Mensagem']")).click();
+                    Thread.sleep(1000);
+                    mensagemDisparo = new StringSelection(tbAux.getModel().getValueAt(o, 0).toString());
+                    clipboard.setContents(mensagemDisparo, null);
+                    Thread.sleep(1000);
+                    act.keyDown(Keys.CONTROL).perform();
+                    act.sendKeys("v").perform();
+                    act.keyUp(Keys.CONTROL).perform();
+                    Thread.sleep(2000);
+                    act.sendKeys(Keys.ENTER).perform();
+                    Thread.sleep(2000);
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Mensagem Erro:" + e);
+            Limpar();
+        }
+    }
+
+    private void validarNome() throws InterruptedException {
+        try {
+            Certificar = driver.findElement(By.cssSelector("span[title='" + tbExibicao.getModel().getValueAt(aux, 1).toString() + "']"));
+        } catch (org.openqa.selenium.NoSuchElementException e) {
+            Certificar = null;
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Nome Erro:" + e);
+            Limpar();
+        }
+    }
+
+    private void apagarPesquisa() {
+        try {
+            driver.findElement(By.cssSelector("div[title='Caixa de texto de pesquisa']")).click();
+            Thread.sleep(100);
+            for (int n = 0; n <= 100; n++) {
+                Thread.sleep(1);
+                act.sendKeys(Keys.DELETE).perform();
+                Thread.sleep(1);
+                act.sendKeys(Keys.BACK_SPACE).perform();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Apagar Erro:" + e);
+            Limpar();
+        }
+    }
+
+    private void pesquisarNome() {
+        try {
+            driver.findElement(By.cssSelector("div[title='Caixa de texto de pesquisa']")).click();
+            Thread.sleep(100);
+            act.keyDown(Keys.CONTROL).perform();
+            act.sendKeys("v").perform();
+            act.keyUp(Keys.CONTROL).perform();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Pesquisar Erro:" + e);
+            Limpar();
+        }
+    }
+
+    public void disparar() {
+        try {
+            montarMensagem();
+            
             System.setProperty("webdriver.chorme.driver", tbConfig.getModel().getValueAt(0, 2).toString());
             ChromeOptions options = new ChromeOptions();
 
@@ -470,15 +566,15 @@ public class TelaDisparo extends javax.swing.JFrame {
             options.addArguments("--remote-allow-origins=*");
             options.addArguments("chrome.switches", "--disable-extensions");
             options.addArguments("--user-data-dir=" + tbConfig.getModel().getValueAt(0, 3).toString());
-            
+
             options.setBinary(tbConfig.getModel().getValueAt(0, 1).toString());
 
-            WebDriver driver = new ChromeDriver(options);
-            Actions act = new Actions(driver);
+            driver = new ChromeDriver(options);
+            act = new Actions(driver);
 
             driver.get("https://web.whatsapp.com/");
 
-            Thread.sleep(300000);
+            Thread.sleep(10000);
 
             for (int n = 0; n <= 5000; n++) {
                 act.keyDown(Keys.CONTROL).keyDown(Keys.ALT).keyDown(Keys.SHIFT).keyDown("]").perform();
@@ -486,67 +582,26 @@ public class TelaDisparo extends javax.swing.JFrame {
 
             act.keyUp(Keys.CONTROL).keyUp(Keys.ALT).keyUp(Keys.SHIFT).keyUp("]").perform();
 
-            Thread.sleep(59000);
-            
-            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            StringSelection selection;
-            StringSelection mensagemDisparo;
+            Thread.sleep(1000);
 
             for (int i = 0; i < tbExibicao.getRowCount(); i++) {
                 Thread.sleep(1000);
-                
-                selection = new StringSelection(tbExibicao.getModel().getValueAt(i, 1).toString());
-                clipboard.setContents(selection, null);
+                aux = i;
 
-                driver.findElement(By.cssSelector("div[title='Caixa de texto de pesquisa']")).click();
-                for (int n = 0; n <= 100; n++) {
-                    act.sendKeys(Keys.DELETE).perform();
-                    act.sendKeys(Keys.BACK_SPACE).perform();
-                }
-                Thread.sleep(2000);
+                buscaDisparo = new StringSelection(tbExibicao.getModel().getValueAt(i, 1).toString());
+                System.out.println(tbExibicao.getModel().getValueAt(aux, 1).toString());
+                clipboard.setContents(buscaDisparo, null);
 
-                act.keyDown(Keys.CONTROL).perform();
-                act.sendKeys("v").perform();
-                act.keyUp(Keys.CONTROL).perform();
-
+                apagarPesquisa();
                 Thread.sleep(1000);
-                act.sendKeys(Keys.ARROW_DOWN, Keys.ENTER).perform();
-                Thread.sleep(6000);
+                pesquisarNome();
+                Thread.sleep(1000);
+                validarNome();
 
-                for (int o = 0; o < tbAux.getRowCount(); o++) {
-                    if (tbAux.getModel().getValueAt(o, 1).toString().isBlank() == false) {
-                        Thread.sleep(2000);
-                        driver.findElement(By.cssSelector("span[data-icon='clip']")).click();
-                        Thread.sleep(2000);
-                        driver.findElement(By.cssSelector("input[type='file']")).sendKeys(tbAux.getModel().getValueAt(o, 1).toString());
-                        Thread.sleep(8000);
-                        driver.findElement(By.cssSelector("div[title='Mensagem']")).click();
-                        Thread.sleep(1000);
+                if (Certificar == null) {
 
-                        mensagemDisparo = new StringSelection(tbAux.getModel().getValueAt(o, 0).toString());
-                        clipboard.setContents(mensagemDisparo, null);
-
-                        Thread.sleep(1000);
-                        act.keyDown(Keys.CONTROL).perform();
-                        act.sendKeys("v").perform();
-                        act.keyUp(Keys.CONTROL).perform();
-
-                        Thread.sleep(2000);
-                        driver.findElement(By.cssSelector("span[data-icon='send']")).click();
-                        Thread.sleep(2000);
-                    } else {
-                        driver.findElement(By.cssSelector("div[title='Mensagem']")).click();
-                        Thread.sleep(1000);
-                        mensagemDisparo = new StringSelection(tbAux.getModel().getValueAt(o, 0).toString());
-                        clipboard.setContents(mensagemDisparo, null);
-                        Thread.sleep(1000);
-                        act.keyDown(Keys.CONTROL).perform();
-                        act.sendKeys("v").perform();
-                        act.keyUp(Keys.CONTROL).perform();
-                        Thread.sleep(2000);
-                        act.sendKeys(Keys.ENTER).perform();
-                        Thread.sleep(2000);
-                    }
+                } else if (Certificar.getAttribute("title").equals(tbExibicao.getModel().getValueAt(i, 1).toString()) == true) {
+                    mensagemDisparo();
                 }
 
             }
@@ -1236,7 +1291,9 @@ public class TelaDisparo extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnDisparar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(btnDisparar, javax.swing.GroupLayout.PREFERRED_SIZE, 766, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -1407,7 +1464,6 @@ public class TelaDisparo extends javax.swing.JFrame {
 
     private void btnDispararActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDispararActionPerformed
         // TODO add your handling code here:
-        montarMensagem();
         disparar();
     }//GEN-LAST:event_btnDispararActionPerformed
 
