@@ -33,7 +33,7 @@ public class TelaOcorrencia extends javax.swing.JFrame {
     }
 
     private void instanciarTbOcorrencia() {
-        String sql = "select idErro as ID, nomeInserido as Inserido, nomeEsperado as Esperado, categoria as Tipo from tbErro";
+        String sql = "select idErro as ID, nomeInserido as Nome_Inserido, categoria as Tipo from tbErro";
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -82,6 +82,9 @@ public class TelaOcorrencia extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Legnu's_Disparador - TelaOcorrencias");
         addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
             public void windowOpened(java.awt.event.WindowEvent evt) {
                 formWindowOpened(evt);
             }
@@ -185,6 +188,12 @@ public class TelaOcorrencia extends javax.swing.JFrame {
         // TODO add your handling code here:
         limparHistorico();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        // TODO add your handling code here:
+        TelaPrincipal principal = new TelaPrincipal();
+        principal.setVisible(true);
+    }//GEN-LAST:event_formWindowClosed
 
     /**
      * @param args the command line arguments
