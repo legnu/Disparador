@@ -21,14 +21,16 @@ select * from tbconfig;
 create table tbgrupos(
 idgrupo MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 nomeGrupo text,
-conjunto varchar(50)
+conjunto varchar(50),
+ultimoEnvioG date
 );
 
 create table tbclientes(
 idcliente MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 nomecliente text,
 telefonecliente varchar(18),
-conjuntocliente varchar(50)
+conjuntocliente varchar(50),
+ultimoEnvioC date
 );
 
 create table tbmensagens(
@@ -48,13 +50,20 @@ categoria text
 insert into tbconfig(idconf,mensagem,midia_path) values(1,"","");
 insert into tbvale(idsenha,senha) values(1,"vazio");
 
+alter table tbgrupos add ultimoEnvioG date;
+alter table tbclientes add ultimoEnvioC date;
+
 describe tbvale;
 
 
 select * from tbvale;
 select * from tbErro;
 select * from tbclientes;
+select * from tbgrupos;
 select * from tbconfig;
+
+select * from tbclientes where ultimoEnvioC != current_date();
+update tbclientes set ultimoEnvioC = date("2023-04-29") where idcliente=10;
 
 select mensagem, midia from tbmensagens where  titulo = 'teste2' or titulo = 'teste';
 
