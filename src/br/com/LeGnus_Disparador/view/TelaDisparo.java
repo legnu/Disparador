@@ -15,7 +15,6 @@ import java.sql.ResultSet;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -585,45 +584,46 @@ public class TelaDisparo extends javax.swing.JFrame {
     private void mensagemDisparo() {
         try {
 
-            TimeUnit.SECONDS.sleep(1);
+            Thread.sleep(2000);
             driver.findElement(By.cssSelector("span[title='" + tbExibicao.getModel().getValueAt(aux, 1).toString() + "']")).click();
-            TimeUnit.SECONDS.sleep(6);
+            Thread.sleep(6000);
 
             System.out.println(tbAux.getRowCount());
 
             for (int o = 0; o < tbAux.getRowCount(); o++) {
                 if (tbAux.getModel().getValueAt(o, 1).toString().isBlank() == false) {
-                    TimeUnit.SECONDS.sleep(2);
+                    Thread.sleep(2000);
                     driver.findElement(By.cssSelector("span[data-icon='clip']")).click();
-                    TimeUnit.SECONDS.sleep(2);
+                    Thread.sleep(2000);
                     driver.findElement(By.cssSelector("input[type='file']")).sendKeys(tbAux.getModel().getValueAt(o, 1).toString());
-                    TimeUnit.SECONDS.sleep(8);
+                    Thread.sleep(10000);
                     driver.findElement(By.cssSelector("div[title='Mensagem']")).click();
-                    TimeUnit.SECONDS.sleep(1);
+                    Thread.sleep(1000);
 
                     mensagemDisparo = new StringSelection(tbAux.getModel().getValueAt(o, 0).toString());
                     clipboard.setContents(mensagemDisparo, null);
 
-                    TimeUnit.SECONDS.sleep(1);
+                    Thread.sleep(1000);
                     act.keyDown(Keys.CONTROL).perform();
                     act.sendKeys("v").perform();
                     act.keyUp(Keys.CONTROL).perform();
 
-                    TimeUnit.SECONDS.sleep(2);
+                    Thread.sleep(2000);
                     driver.findElement(By.cssSelector("span[data-icon='send']")).click();
-                    TimeUnit.SECONDS.sleep(2);
+                    Thread.sleep(2000);
                 } else if (tbAux.getModel().getValueAt(o, 1).toString().isBlank() == true) {
+                    Thread.sleep(5000);
                     driver.findElement(By.cssSelector("div[title='Mensagem']")).click();
-                    TimeUnit.SECONDS.sleep(1);
+                    Thread.sleep(2000);
                     mensagemDisparo = new StringSelection(tbAux.getModel().getValueAt(o, 0).toString());
                     clipboard.setContents(mensagemDisparo, null);
-                    TimeUnit.SECONDS.sleep(1);
+                    Thread.sleep(2000);
                     act.keyDown(Keys.CONTROL).perform();
                     act.sendKeys("v").perform();
                     act.keyUp(Keys.CONTROL).perform();
-                    TimeUnit.SECONDS.sleep(2);
+                    Thread.sleep(2000);
                     act.sendKeys(Keys.ENTER).perform();
-                    TimeUnit.SECONDS.sleep(2);
+                    Thread.sleep(2000);
                 }
             }
 
@@ -666,6 +666,7 @@ public class TelaDisparo extends javax.swing.JFrame {
         try {
             driver.findElement(By.cssSelector("div[title='Caixa de texto de pesquisa']")).click();
             Thread.sleep(100);
+            
             act.keyDown(Keys.CONTROL).perform();
             act.sendKeys("v").perform();
             act.keyUp(Keys.CONTROL).perform();
@@ -696,7 +697,7 @@ public class TelaDisparo extends javax.swing.JFrame {
 
             driver.get("https://web.whatsapp.com/");
 
-            TimeUnit.SECONDS.sleep(10);
+            Thread.sleep(10000);
 
             for (int n = 0; n <= 5000; n++) {
                 act.keyDown(Keys.CONTROL).keyDown(Keys.ALT).keyDown(Keys.SHIFT).keyDown("]").perform();
@@ -704,19 +705,19 @@ public class TelaDisparo extends javax.swing.JFrame {
 
             act.keyUp(Keys.CONTROL).keyUp(Keys.ALT).keyUp(Keys.SHIFT).keyUp("]").perform();
 
-            TimeUnit.SECONDS.sleep(10);
+            Thread.sleep(5000);
 
             for (int i = 0; i < tbExibicao.getRowCount(); i++) {
-                TimeUnit.SECONDS.sleep(1);
+                Thread.sleep(2000);
                 aux = i;
 
                 buscaDisparo = new StringSelection(tbExibicao.getModel().getValueAt(i, 1).toString());
                 clipboard.setContents(buscaDisparo, null);
 
                 apagarPesquisa();
-                TimeUnit.SECONDS.sleep(1);
+                Thread.sleep(2000);
                 pesquisarNome();
-                TimeUnit.SECONDS.sleep(1);
+                Thread.sleep(2000);
                 validarNome();
 
                 if (Certificar == null) {

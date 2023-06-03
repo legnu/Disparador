@@ -5,7 +5,6 @@
 package br.com.LeGnus_Disparador.view;
 
 import br.com.LeGnus_Disparador.model.ModuloConexao;
-import java.awt.Color;
 import java.awt.Toolkit;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
