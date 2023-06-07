@@ -20,6 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import net.proteanit.sql.DbUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -41,9 +42,7 @@ public class TelaDisparo extends javax.swing.JFrame {
     String lista;
     String listaCliente;
     String listaMensagem;
-    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-    StringSelection buscaDisparo;
-    StringSelection mensagemDisparo;
+    JavascriptExecutor js; 
     WebElement Certificar;
     WebDriver driver;
     Actions act;
@@ -589,6 +588,7 @@ public class TelaDisparo extends javax.swing.JFrame {
             Thread.sleep(6000);
 
             System.out.println(tbAux.getRowCount());
+            js = (JavascriptExecutor) driver;
 
             for (int o = 0; o < tbAux.getRowCount(); o++) {
                 if (tbAux.getModel().getValueAt(o, 1).toString().isBlank() == false) {
@@ -597,30 +597,24 @@ public class TelaDisparo extends javax.swing.JFrame {
                     Thread.sleep(2000);
                     driver.findElement(By.cssSelector("input[type='file']")).sendKeys(tbAux.getModel().getValueAt(o, 1).toString());
                     Thread.sleep(10000);
-                    driver.findElement(By.cssSelector("div[title='Mensagem']")).click();
+                    driver.findElement(By.cssSelector("div[title='Mensagem']")).click();                    
+                    Thread.sleep(1000);                    
+                    act.sendKeys(".").perform();
                     Thread.sleep(1000);
-
-                    mensagemDisparo = new StringSelection(tbAux.getModel().getValueAt(o, 0).toString());
-                    clipboard.setContents(mensagemDisparo, null);
-
-                    Thread.sleep(1000);
-                    act.keyDown(Keys.CONTROL).perform();
-                    act.sendKeys("v").perform();
-                    act.keyUp(Keys.CONTROL).perform();
-
+                    js.executeScript("document.getElementsByClassName(\"selectable-text copyable-text\")[1].firstChild.data = '"+ tbAux.getModel().getValueAt(o, 0).toString() +"';");
+                    
                     Thread.sleep(2000);
                     driver.findElement(By.cssSelector("span[data-icon='send']")).click();
                     Thread.sleep(2000);
+                    
                 } else if (tbAux.getModel().getValueAt(o, 1).toString().isBlank() == true) {
                     Thread.sleep(5000);
                     driver.findElement(By.cssSelector("div[title='Mensagem']")).click();
-                    Thread.sleep(2000);
-                    mensagemDisparo = new StringSelection(tbAux.getModel().getValueAt(o, 0).toString());
-                    clipboard.setContents(mensagemDisparo, null);
-                    Thread.sleep(2000);
-                    act.keyDown(Keys.CONTROL).perform();
-                    act.sendKeys("v").perform();
-                    act.keyUp(Keys.CONTROL).perform();
+                    Thread.sleep(1000);
+                    act.sendKeys(".").perform();
+                    Thread.sleep(1000);
+                    js.executeScript("document.getElementsByClassName(\"selectable-text copyable-text\")[parseInt(document.getElementsByClassName(\"selectable-text copyable-text\").length) - 1].firstChild.data = '"+ tbAux.getModel().getValueAt(o, 0).toString() + "';");
+                                        
                     Thread.sleep(2000);
                     act.sendKeys(Keys.ENTER).perform();
                     Thread.sleep(2000);
@@ -665,11 +659,12 @@ public class TelaDisparo extends javax.swing.JFrame {
     private void pesquisarNome() {
         try {
             driver.findElement(By.cssSelector("div[title='Caixa de texto de pesquisa']")).click();
-            Thread.sleep(100);
+            Thread.sleep(500);            
+            act.sendKeys(".").perform();
+            Thread.sleep(1000);
+            js = (JavascriptExecutor) driver;
+            js.executeScript("document.getElementsByClassName(\"selectable-text copyable-text\")[1].firstChild.data = '"+ tbExibicao.getModel().getValueAt(aux, 1).toString() +"';");
             
-            act.keyDown(Keys.CONTROL).perform();
-            act.sendKeys("v").perform();
-            act.keyUp(Keys.CONTROL).perform();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Pesquisar Erro:" + e);
             Limpar();
@@ -710,9 +705,6 @@ public class TelaDisparo extends javax.swing.JFrame {
             for (int i = 0; i < tbExibicao.getRowCount(); i++) {
                 Thread.sleep(2000);
                 aux = i;
-
-                buscaDisparo = new StringSelection(tbExibicao.getModel().getValueAt(i, 1).toString());
-                clipboard.setContents(buscaDisparo, null);
 
                 apagarPesquisa();
                 Thread.sleep(2000);
