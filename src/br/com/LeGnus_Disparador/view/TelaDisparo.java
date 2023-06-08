@@ -552,7 +552,8 @@ public class TelaDisparo extends javax.swing.JFrame {
              */
             Thread.sleep(300000);
             js = (JavascriptExecutor) driver;
-            for (int d = 1; d <= 500000; d++) {
+            
+            for (int d = 1; d <= 500000; d = d + 10) {
                 js.executeScript("document.querySelector('[id=\"pane-side\"]').scroll(0," + d + ");");
 
             }
