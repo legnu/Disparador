@@ -42,14 +42,14 @@ public class TelaDisparo extends javax.swing.JFrame {
     String lista;
     String listaCliente;
     String listaMensagem;
-    JavascriptExecutor js; 
+    JavascriptExecutor js;
     WebElement Certificar;
     WebDriver driver;
     Actions act;
     int aux;
 
     /**
-     * Creates new form TelaDisparo
+     * O conjunto de objetos abaixo são responsaves pelo funcionamento da tela.
      */
     public TelaDisparo() {
         initComponents();
@@ -62,7 +62,7 @@ public class TelaDisparo extends javax.swing.JFrame {
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/br/com/LeGnus_Disparador/util/ERPGestao64.png")));
     }
 
-    public void buscarExecutavel() {
+    private void buscarExecutavel() {
         try {
             JFileChooser arquivo = new JFileChooser();
             arquivo.setDialogTitle("EXECUTAVEL");
@@ -83,7 +83,7 @@ public class TelaDisparo extends javax.swing.JFrame {
         }
     }
 
-    public void buscarBinario() {
+    private void buscarBinario() {
         try {
             JFileChooser arquivo = new JFileChooser();
             arquivo.setDialogTitle("BINARIO");
@@ -105,7 +105,7 @@ public class TelaDisparo extends javax.swing.JFrame {
 
     }
 
-    public void buscarPerfil() {
+    private void buscarPerfil() {
         try {
             JFileChooser arquivo = new JFileChooser();
             arquivo.setDialogTitle("PERFIL");
@@ -147,7 +147,7 @@ public class TelaDisparo extends javax.swing.JFrame {
         }
     }
 
-    public void montarLista() {
+    private void montarLista() {
         try {
             String Resultado;
             String ResultadoCliente;
@@ -179,30 +179,7 @@ public class TelaDisparo extends javax.swing.JFrame {
         }
     }
 
-    public void montarMensagem() {
-        try {
-            String Resultado;
-
-            for (int i = 0; tbMensagemSelecionada.getRowCount() > i; i++) {
-                if (i == 0) {
-                    Resultado = " titulo = " + "'" + tbMensagemSelecionada.getModel().getValueAt(i, 0).toString() + "'";
-                    listaMensagem = Resultado;
-                } else {
-                    Resultado = " or titulo = " + "'" + tbMensagemSelecionada.getModel().getValueAt(i, 0).toString() + "'";
-                    listaMensagem = listaMensagem + Resultado;
-                }
-            }
-            String sqy = "select mensagem, midia from tbmensagens where " + listaMensagem;
-            pst = conexao.prepareStatement(sqy);
-            rs = pst.executeQuery();
-            tbAux.setModel(DbUtils.resultSetToTableModel(rs));
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
-            Limpar();
-        }
-    }
-
-    public void instanciarTabela() {
+    private void instanciarTabela() {
         try {
             if (rbLimitarID.isSelected() == false && rbGrupo.isSelected() == true) {
                 if (rbLimitarCategoria.isSelected() == true) {
@@ -370,7 +347,7 @@ public class TelaDisparo extends javax.swing.JFrame {
         try {
             rbLimitarCategoria.setSelected(false);
             rbNaoEnviados.setSelected(false);
-            
+
             if (rbLimitarID.isSelected() == false && rbGrupo.isSelected() == true) {
                 if (rbLimitarCategoria.isSelected() == true) {
 
@@ -437,7 +414,7 @@ public class TelaDisparo extends javax.swing.JFrame {
         }
     }
 
-    public void instanciarCategoria() {
+    private void instanciarCategoria() {
         try {
             if (rbGrupo.isSelected() == true && rbLimitarCategoria.isSelected() == true) {
 
@@ -531,6 +508,175 @@ public class TelaDisparo extends javax.swing.JFrame {
 
     }
 
+    private void Limpar() {
+        btnEnviarCategoria.setEnabled(false);
+        btnRemoverCategoria.setEnabled(false);
+        btnEnviarMensagem.setEnabled(false);
+        btnRemoverMensagem.setEnabled(false);
+        ((DefaultTableModel) tbCategoriaSelecionada.getModel()).setRowCount(0);
+        ((DefaultTableModel) tbMensagemSelecionada.getModel()).setRowCount(0);
+        instanciarTbConfig();
+
+    }
+    
+
+    /**
+     * O conjunto de objetos abaixo são responsaveis pelo disparo
+     */
+    private void disparar() {
+        try {
+
+            /**
+             * Configuração do Chrome*
+             */
+            System.setProperty("webdriver.chorme.driver", tbConfig.getModel().getValueAt(0, 2).toString());
+            ChromeOptions options = new ChromeOptions();
+            options.addArguments("--disable-dev-shm-usage");
+            options.addArguments("--ignore-ssl-errors=yes");
+            options.addArguments("--ignore-certificate-errors");
+            options.addArguments("--remote-allow-origins=*");
+            options.addArguments("chrome.switches", "--disable-extensions");
+            options.addArguments("--user-data-dir=" + tbConfig.getModel().getValueAt(0, 3).toString());
+            options.setBinary(tbConfig.getModel().getValueAt(0, 1).toString());
+
+            /**
+             * Configuração do Driver && Lista de Mensagens selecionadas*
+             */
+            montarMensagem();
+            driver = new ChromeDriver(options);
+            act = new Actions(driver);
+            driver.get("https://web.whatsapp.com/");
+
+            /**
+             * Configuração do Driver && Lista de Mensagens selecionadas*
+             */
+            Thread.sleep(300000);
+            js = (JavascriptExecutor) driver;
+            for (int d = 1; d <= 500000; d++) {
+                js.executeScript("document.querySelector('[id=\"pane-side\"]').scroll(0," + d + ");");
+
+            }
+            Thread.sleep(60000);
+
+            /**
+             * Disparo*
+             */
+            for (int i = 0; i < tbExibicao.getRowCount(); i++) {
+                aux = i;
+                Thread.sleep(2000);
+                apagarPesquisa();
+                Thread.sleep(2000);
+                pesquisarNome();
+                Thread.sleep(2000);
+                validarNome();
+
+                if (Certificar == null) {
+                    listaNegra();
+
+                } else if (Certificar.getAttribute("title").equals(tbExibicao.getModel().getValueAt(i, 1).toString()) == true) {
+                    mensagemDisparo();
+                }
+
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Disparo error: " + e);
+            Limpar();
+        }
+    }
+
+    private void montarMensagem() {
+        try {
+            String Resultado;
+
+            String sql = "select * from tbmensagens";
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            tbAux.setModel(DbUtils.resultSetToTableModel(rs));
+
+            for (int i = 0; tbAux.getRowCount() > i; i++) {
+
+                sql = "update tbmensagens set ordem=? where idmensagem=?";
+                pst = conexao.prepareStatement(sql);
+                pst.setInt(1, 0);
+                pst.setInt(2,  i+1);
+                pst.executeUpdate();
+
+            }
+
+            for (int i = 0; tbMensagemSelecionada.getRowCount() > i; i++) {
+                if (i == 0) {
+                    Resultado = " titulo = " + "'" + tbMensagemSelecionada.getModel().getValueAt(i, 0).toString() + "'";
+                    listaMensagem = Resultado;
+                    sql = "update tbmensagens set ordem=? where mensagem=?";
+                    pst = conexao.prepareStatement(sql);
+                    pst.setInt(1, i);
+                    pst.setString(2,  tbMensagemSelecionada.getModel().getValueAt(i, 0).toString());
+                    pst.executeUpdate();
+                    
+                } else {
+                    Resultado = " or titulo = " + "'" + tbMensagemSelecionada.getModel().getValueAt(i, 0).toString() + "'";
+                    listaMensagem = listaMensagem + Resultado;
+                    sql = "update tbmensagens set ordem=? where mensagem=?";
+                    pst = conexao.prepareStatement(sql);
+                    pst.setInt(1, i);
+                    pst.setString(2, tbMensagemSelecionada.getModel().getValueAt(i, 0).toString());
+                    pst.executeUpdate();
+                }
+            }
+            
+            String sqy = "select mensagem, midia from tbmensagens where " + listaMensagem + " ORDER BY ordem asc";
+            pst = conexao.prepareStatement(sqy);
+            rs = pst.executeQuery();
+            tbAux.setModel(DbUtils.resultSetToTableModel(rs));
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+            Limpar();
+        }
+    }
+
+    private void apagarPesquisa() {
+        try {
+            driver.findElement(By.cssSelector("div[title='Caixa de texto de pesquisa']")).click();
+            Thread.sleep(100);
+            for (int n = 0; n <= 100; n++) {
+                Thread.sleep(1);
+                act.sendKeys(Keys.DELETE).perform();
+                Thread.sleep(1);
+                act.sendKeys(Keys.BACK_SPACE).perform();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Apagar Erro:" + e);
+            Limpar();
+        }
+    }
+
+    private void pesquisarNome() {
+        try {
+            driver.findElement(By.cssSelector("div[title='Caixa de texto de pesquisa']")).click();
+            Thread.sleep(500);
+            act.sendKeys(".").perform();
+            Thread.sleep(500);
+            js = (JavascriptExecutor) driver;
+            js.executeScript("document.getElementsByClassName(\"selectable-text copyable-text\")[1].firstChild.data = '" + tbExibicao.getModel().getValueAt(aux, 1).toString() + "';");
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Pesquisar Erro:" + e);
+            Limpar();
+        }
+    }
+
+    private void validarNome() throws InterruptedException {
+        try {
+            Certificar = driver.findElement(By.cssSelector("span[title='" + tbExibicao.getModel().getValueAt(aux, 1).toString() + "']"));
+        } catch (org.openqa.selenium.NoSuchElementException e) {
+            Certificar = null;
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Nome Erro:" + e);
+            Limpar();
+        }
+    }
+
     private void listaNegra() {
         try {
             String sql = "insert into tbErro(nomeInserido,categoria) values(?,?)";
@@ -547,6 +693,52 @@ public class TelaDisparo extends javax.swing.JFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Lista Negra Error:" + e);
 
+        }
+    }
+
+    private void mensagemDisparo() {
+        try {
+
+            Thread.sleep(2000);
+            driver.findElement(By.cssSelector("span[title='" + tbExibicao.getModel().getValueAt(aux, 1).toString() + "']")).click();
+            Thread.sleep(6000);
+
+            System.out.println(tbAux.getRowCount());
+            js = (JavascriptExecutor) driver;
+
+            for (int o = 0; o < tbAux.getRowCount(); o++) {
+                if (tbAux.getModel().getValueAt(o, 1).toString().isBlank() == false) {
+                    Thread.sleep(2000);
+                    driver.findElement(By.cssSelector("span[data-icon='clip']")).click();
+                    Thread.sleep(2000);
+                    driver.findElement(By.cssSelector("input[type='file']")).sendKeys(tbAux.getModel().getValueAt(o, 1).toString());
+                    Thread.sleep(10000);
+                    driver.findElement(By.cssSelector("div[title='Mensagem']")).click();
+                    Thread.sleep(500);
+                    act.sendKeys(".").perform();
+                    Thread.sleep(500);
+                    js.executeScript("document.getElementsByClassName(\"selectable-text copyable-text\")[1].firstChild.data = '" + tbAux.getModel().getValueAt(o, 0).toString() + "';");
+                    Thread.sleep(1000);
+                    driver.findElement(By.cssSelector("span[data-icon='send']")).click();
+                    Thread.sleep(1000);
+
+                } else if (tbAux.getModel().getValueAt(o, 1).toString().isBlank() == true) {
+                    Thread.sleep(2000);
+                    driver.findElement(By.cssSelector("div[title='Mensagem']")).click();
+                    Thread.sleep(500);
+                    act.sendKeys(".").perform();
+                    Thread.sleep(500);
+                    js.executeScript("document.getElementsByClassName(\"selectable-text copyable-text\")[parseInt(document.getElementsByClassName(\"selectable-text copyable-text\").length) - 1].firstChild.data = '" + tbAux.getModel().getValueAt(o, 0).toString() + "';");
+                    Thread.sleep(1000);
+                    act.sendKeys(Keys.ENTER).perform();
+                    Thread.sleep(1000);
+                }
+            }
+            ultimoEnvio();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Mensagem Erro:" + e);
+            Limpar();
         }
     }
 
@@ -578,163 +770,6 @@ public class TelaDisparo extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "UltimoEnvio error: " + e);
 
         }
-    }
-
-    private void mensagemDisparo() {
-        try {
-
-            Thread.sleep(2000);
-            driver.findElement(By.cssSelector("span[title='" + tbExibicao.getModel().getValueAt(aux, 1).toString() + "']")).click();
-            Thread.sleep(6000);
-
-            System.out.println(tbAux.getRowCount());
-            js = (JavascriptExecutor) driver;
-
-            for (int o = 0; o < tbAux.getRowCount(); o++) {
-                if (tbAux.getModel().getValueAt(o, 1).toString().isBlank() == false) {
-                    Thread.sleep(2000);
-                    driver.findElement(By.cssSelector("span[data-icon='clip']")).click();
-                    Thread.sleep(2000);
-                    driver.findElement(By.cssSelector("input[type='file']")).sendKeys(tbAux.getModel().getValueAt(o, 1).toString());
-                    Thread.sleep(10000);
-                    driver.findElement(By.cssSelector("div[title='Mensagem']")).click();                    
-                    Thread.sleep(1000);                    
-                    act.sendKeys(".").perform();
-                    Thread.sleep(1000);
-                    js.executeScript("document.getElementsByClassName(\"selectable-text copyable-text\")[1].firstChild.data = '"+ tbAux.getModel().getValueAt(o, 0).toString() +"';");
-                    
-                    Thread.sleep(2000);
-                    driver.findElement(By.cssSelector("span[data-icon='send']")).click();
-                    Thread.sleep(2000);
-                    
-                } else if (tbAux.getModel().getValueAt(o, 1).toString().isBlank() == true) {
-                    Thread.sleep(5000);
-                    driver.findElement(By.cssSelector("div[title='Mensagem']")).click();
-                    Thread.sleep(1000);
-                    act.sendKeys(".").perform();
-                    Thread.sleep(1000);
-                    js.executeScript("document.getElementsByClassName(\"selectable-text copyable-text\")[parseInt(document.getElementsByClassName(\"selectable-text copyable-text\").length) - 1].firstChild.data = '"+ tbAux.getModel().getValueAt(o, 0).toString() + "';");
-                                        
-                    Thread.sleep(2000);
-                    act.sendKeys(Keys.ENTER).perform();
-                    Thread.sleep(2000);
-                }
-            }
-
-            ultimoEnvio();
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Mensagem Erro:" + e);
-            Limpar();
-        }
-    }
-
-    private void validarNome() throws InterruptedException {
-        try {
-            Certificar = driver.findElement(By.cssSelector("span[title='" + tbExibicao.getModel().getValueAt(aux, 1).toString() + "']"));
-        } catch (org.openqa.selenium.NoSuchElementException e) {
-            Certificar = null;
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Nome Erro:" + e);
-            Limpar();
-        }
-    }
-
-    private void apagarPesquisa() {
-        try {
-            driver.findElement(By.cssSelector("div[title='Caixa de texto de pesquisa']")).click();
-            Thread.sleep(100);
-            for (int n = 0; n <= 100; n++) {
-                Thread.sleep(1);
-                act.sendKeys(Keys.DELETE).perform();
-                Thread.sleep(1);
-                act.sendKeys(Keys.BACK_SPACE).perform();
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Apagar Erro:" + e);
-            Limpar();
-        }
-    }
-
-    private void pesquisarNome() {
-        try {
-            driver.findElement(By.cssSelector("div[title='Caixa de texto de pesquisa']")).click();
-            Thread.sleep(500);            
-            act.sendKeys(".").perform();
-            Thread.sleep(1000);
-            js = (JavascriptExecutor) driver;
-            js.executeScript("document.getElementsByClassName(\"selectable-text copyable-text\")[1].firstChild.data = '"+ tbExibicao.getModel().getValueAt(aux, 1).toString() +"';");
-            
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Pesquisar Erro:" + e);
-            Limpar();
-        }
-    }
-
-    public void disparar() {
-        try {
-            montarMensagem();
-
-            System.setProperty("webdriver.chorme.driver", tbConfig.getModel().getValueAt(0, 2).toString());
-            ChromeOptions options = new ChromeOptions();
-
-            options.addArguments("--disable-dev-shm-usage");
-            options.addArguments("--ignore-ssl-errors=yes");
-            options.addArguments("--ignore-certificate-errors");
-            options.addArguments("--remote-allow-origins=*");
-            options.addArguments("chrome.switches", "--disable-extensions");
-            options.addArguments("--user-data-dir=" + tbConfig.getModel().getValueAt(0, 3).toString());
-
-            options.setBinary(tbConfig.getModel().getValueAt(0, 1).toString());
-
-            driver = new ChromeDriver(options);
-            act = new Actions(driver);
-
-            driver.get("https://web.whatsapp.com/");
-
-            Thread.sleep(10000);
-
-            for (int n = 0; n <= 5000; n++) {
-                act.keyDown(Keys.CONTROL).keyDown(Keys.ALT).keyDown(Keys.SHIFT).keyDown("]").perform();
-            }
-
-            act.keyUp(Keys.CONTROL).keyUp(Keys.ALT).keyUp(Keys.SHIFT).keyUp("]").perform();
-
-            Thread.sleep(5000);
-
-            for (int i = 0; i < tbExibicao.getRowCount(); i++) {
-                Thread.sleep(2000);
-                aux = i;
-
-                apagarPesquisa();
-                Thread.sleep(2000);
-                pesquisarNome();
-                Thread.sleep(2000);
-                validarNome();
-
-                if (Certificar == null) {
-                    listaNegra();
-
-                } else if (Certificar.getAttribute("title").equals(tbExibicao.getModel().getValueAt(i, 1).toString()) == true) {
-                    mensagemDisparo();
-                }
-
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Disparo error: " + e);
-            Limpar();
-        }
-    }
-
-    public void Limpar() {
-        btnEnviarCategoria.setEnabled(false);
-        btnRemoverCategoria.setEnabled(false);
-        btnEnviarMensagem.setEnabled(false);
-        btnRemoverMensagem.setEnabled(false);
-        ((DefaultTableModel) tbCategoriaSelecionada.getModel()).setRowCount(0);
-        ((DefaultTableModel) tbMensagemSelecionada.getModel()).setRowCount(0);
-        instanciarTbConfig();
-
     }
 
     /**
