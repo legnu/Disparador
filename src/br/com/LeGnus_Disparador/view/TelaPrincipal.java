@@ -57,6 +57,12 @@ public class TelaPrincipal extends javax.swing.JFrame {
         ocorrencias.setVisible(true);
         this.dispose();
     }
+    
+    private void telaConfiguraçao() {
+        TelaConfiguracao configuracao = new TelaConfiguracao();
+        configuracao.setVisible(true);
+        this.dispose();
+    }
 
     public TelaPrincipal() {
         initComponents();
@@ -134,6 +140,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         btnDisparar = new javax.swing.JButton();
         btnMensagem = new javax.swing.JButton();
         btnOcorrencias = new javax.swing.JButton();
+        btnConfiguracao = new javax.swing.JButton();
 
         tbAuxilio.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -214,6 +221,16 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        btnConfiguracao.setBackground(new java.awt.Color(102, 102, 102));
+        btnConfiguracao.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
+        btnConfiguracao.setForeground(new java.awt.Color(255, 255, 255));
+        btnConfiguracao.setText("Configuração");
+        btnConfiguracao.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConfiguracaoActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -230,7 +247,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnDisparar, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnOcorrencias, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(btnOcorrencias, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnConfiguracao, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(24, 24, 24))
         );
@@ -248,7 +266,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
                     .addComponent(btnGrupos, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnOcorrencias, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(btnMensagem, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnMensagem, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnConfiguracao, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(27, Short.MAX_VALUE))
         );
 
@@ -297,6 +317,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
         envio();
     }//GEN-LAST:event_formWindowOpened
 
+    private void btnConfiguracaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfiguracaoActionPerformed
+        // TODO add your handling code here:
+        telaConfiguraçao();
+    }//GEN-LAST:event_btnConfiguracaoActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -334,6 +359,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnClientes;
+    private javax.swing.JButton btnConfiguracao;
     private javax.swing.JButton btnDisparar;
     private javax.swing.JButton btnGrupos;
     private javax.swing.JButton btnMensagem;
