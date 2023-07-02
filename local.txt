@@ -9,11 +9,24 @@ vencimento date);
 
 create table tbconfig(
 idconf MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
-firefoxBinary_path text,
-geckoExe_path text,
-firefoxProfile_path text,
-mensagem text,
-midia_path text);
+Driver text,
+Exe text,
+Prof text,
+Sleep_Inicio text,
+Velocidade_Inicio text,
+Scroll text,
+Caixa_Pesquisa text,
+Caixa_Pesquisa_HTML text,
+Midia_Click text,
+Midia_Send_File text,
+Midia_Mensagem text,
+Midia_Mensagem_HTML text,
+Midia_Send text,
+Mensagem_Path text,
+Mensagem_HTML_Path text,
+BotaoFecharPath text,
+SleepMensagens text
+);
 
 select * from tbconfig;
 
@@ -48,7 +61,6 @@ nomeEsperado text,
 categoria text
 );
 
-insert into tbconfig(idconf,mensagem,midia_path) values(1,"","");
 insert into tbvale(idsenha,senha) values(1,"vazio");
 
 alter table tbgrupos add ultimoEnvioG date;

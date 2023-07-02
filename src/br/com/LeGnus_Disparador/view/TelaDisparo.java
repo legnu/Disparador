@@ -39,16 +39,38 @@ public class TelaDisparo extends javax.swing.JFrame {
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
+
     String Categoria;
     String Mensagem;
     String lista;
     String listaCliente;
     String listaMensagem;
+
     JavascriptExecutor js;
     WebElement Certificar;
     WebDriver driver;
     Actions act;
+
     int aux;
+    int contagemMensagem;
+
+    String confDriver;
+    String confExe;
+    String confProf;
+    String confSleepInicio;
+    String confVelocidadeInicio;
+    String confScroll;
+    String confCaixaPesquisa;
+    String confCaixaPesquisaHTML;
+    String confMidiaClick;
+    String confMidiaSendFile;
+    String confMidiaMensagem;
+    String confMidiaMensagemHTLM;
+    String confMidiaSend;
+    String confMensagemPath;
+    String confMensagemPathHTLM;
+    String confBotaoFecharPath;
+    String confSleepMensagens;
 
     /**
      * O conjunto de objetos abaixo são responsaves pelo funcionamento da tela.
@@ -64,13 +86,33 @@ public class TelaDisparo extends javax.swing.JFrame {
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/br/com/LeGnus_Disparador/util/ERPGestao64.png")));
     }
 
+    private void setCliente() {
+        pnExibição.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Clientes", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
+        Limpar();
+        rbLimitarID.setSelected(false);
+        rbLimitarCategoria.setSelected(false);
+        Limitar();
+        instanciarCategoria();
+        instanciarTabela();
+    }
+
+    private void setGrupo() {
+        pnExibição.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Grupos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
+        Limpar();
+        rbLimitarID.setSelected(false);
+        rbLimitarCategoria.setSelected(false);
+        Limitar();
+        instanciarCategoria();
+        instanciarTabela();
+    }
+
     private void Limitar() {
         try {
             if (rbLimitarID.isSelected() == true) {
                 txtInicial.setEnabled(true);
                 txtFinal.setEnabled(true);
                 txtInicial.setText("0");
-                txtFinal.setText(String.valueOf(tbExibicao.getRowCount()));
+                txtFinal.setText("100000");
 
             } else {
                 txtInicial.setEnabled(false);
@@ -119,144 +161,107 @@ public class TelaDisparo extends javax.swing.JFrame {
 
     private void instanciarTabela() {
         try {
-            if (rbLimitarID.isSelected() == false && rbGrupo.isSelected() == true) {
-                if (rbLimitarCategoria.isSelected() == true) {
-                    if (rbNaoEnviados.isSelected() == true) {
-                        String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo, conjunto as Categoria from tbgrupos where ultimoEnvioG != current_date() and " + lista;
-                        pst = conexao.prepareStatement(sql);
-                        rs = pst.executeQuery();
-                        tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
-                    } else {
-                        String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo, conjunto as Categoria from tbgrupos where " + lista;
-                        pst = conexao.prepareStatement(sql);
-                        rs = pst.executeQuery();
-                        tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
+            String sql;
+            int i = 0;
+
+            if (rbGrupo.isSelected() == true) {
+                sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo, conjunto as Categoria from tbgrupos";
+
+                if (rbLimitarCategoria.isSelected() == true || rbLimitarID.isSelected() == true || rbNaoEnviados.isSelected() == true) {
+
+                    sql = sql + " where";
+
+                    if (rbLimitarID.isSelected() == true && i < 1) {
+                        sql = sql + "  idgrupo>= " + txtInicial.getText() + " and idgrupo <= " + txtFinal.getText();
+                        i++;
+                    } else if (rbLimitarID.isSelected() == true && i >= 1) {
+                        sql = sql + "  and idgrupo>= " + txtInicial.getText() + " and idgrupo <= " + txtFinal.getText();
                     }
-                } else {
-                    if (rbNaoEnviados.isSelected() == true) {
-                        String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo, conjunto as Categoria from tbgrupos where ultimoEnvioG != current_date()";
-                        pst = conexao.prepareStatement(sql);
-                        rs = pst.executeQuery();
-                        tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
-                    } else {
-                        String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo, conjunto as Categoria from tbgrupos";
-                        pst = conexao.prepareStatement(sql);
-                        rs = pst.executeQuery();
-                        tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
+
+                    if (rbLimitarCategoria.isSelected() == true && i < 1) {
+                        sql = sql + " " + lista;
+                        i++;
+                    } else if (rbLimitarCategoria.isSelected() == true && i >= 1) {
+                        sql = sql + " and" + lista;
+                    }
+
+                    if (rbNaoEnviados.isSelected() == true && i < 1) {
+                        sql = sql + " ultimoEnvioG != current_date()";
+                        i++;
+                    } else if (rbNaoEnviados.isSelected() == true && i >= 1) {
+                        sql = sql + " and ultimoEnvioG != current_date()";
                     }
                 }
 
-            } else if (rbLimitarID.isSelected() == false && rbCliente.isSelected() == true) {
-                if (rbLimitarCategoria.isSelected() == true) {
-                    if (rbNaoEnviados.isSelected() == true) {
-                        String sql = "select idcliente as NºCliente, nomeCliente as Cliente,conjuntocliente as Categoria from tbclientes where ultimoEnvioC != current_date() and " + listaCliente;
-                        pst = conexao.prepareStatement(sql);
-                        rs = pst.executeQuery();
-                        tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
-                    } else {
-                        String sql = "select idcliente as NºCliente, nomeCliente as Cliente,conjuntocliente as Categoria from tbclientes where " + listaCliente;
-                        pst = conexao.prepareStatement(sql);
-                        rs = pst.executeQuery();
-                        tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
+                System.out.println(i);
+                System.out.println(sql);
+
+                pst = conexao.prepareStatement(sql);
+                rs = pst.executeQuery();
+                tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
+
+            } else if (rbCliente.isSelected() == true) {
+                sql = "select idcliente as NºCliente, nomeCliente as Cliente,conjuntocliente as Categoria from tbclientes ";
+
+                if (rbLimitarCategoria.isSelected() == true || rbLimitarID.isSelected() == true || rbNaoEnviados.isSelected() == true) {
+
+                    sql = sql + " where";
+
+                    if (rbLimitarID.isSelected() == true && i < 1) {
+                        sql = sql + "  idcliente>= " + txtInicial.getText() + " and idcliente <= " + txtFinal.getText();
+                        i++;
+                    } else if (rbLimitarID.isSelected() == true && i >= 1) {
+                        sql = sql + "  and idcliente>= " + txtInicial.getText() + " and idcliente <= " + txtFinal.getText();
                     }
-                } else {
-                    if (rbNaoEnviados.isSelected() == true) {
-                        String sql = "select idcliente as NºCliente, nomeCliente as Cliente,conjuntocliente as Categoria from tbclientes where ultimoEnvioC != current_date()";
-                        pst = conexao.prepareStatement(sql);
-                        rs = pst.executeQuery();
-                        tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
-                    } else {
-                        String sql = "select idcliente as NºCliente, nomeCliente as Cliente,conjuntocliente as Categoria from tbclientes";
-                        pst = conexao.prepareStatement(sql);
-                        rs = pst.executeQuery();
-                        tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
+
+                    if (rbLimitarCategoria.isSelected() == true && i < 1) {
+                        sql = sql + " " + listaCliente;
+                        i++;
+                    } else if (rbLimitarCategoria.isSelected() == true && i >= 1) {
+                        sql = sql + " and" + listaCliente;
+                    }
+
+                    if (rbNaoEnviados.isSelected() == true && i < 1) {
+                        sql = sql + " ultimoEnvioC != current_date()";
+                        i++;
+                    } else if (rbNaoEnviados.isSelected() == true && i >= 1) {
+                        sql = sql + " and ultimoEnvioC != current_date()";
                     }
                 }
 
-            } else if (rbLimitarID.isSelected() == true && rbGrupo.isSelected() == true) {
-                if (rbLimitarCategoria.isSelected() == true) {
-                    if (rbNaoEnviados.isSelected() == true) {
-                        String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo, conjunto as Categoria from tbgrupos where ultimoEnvioG != current_date() and " + lista + " and idgrupo >= ? and idgrupo <= ?";
-                        pst = conexao.prepareStatement(sql);
-                        pst.setInt(1, Integer.parseInt(txtInicial.getText()));
-                        pst.setInt(2, Integer.parseInt(txtFinal.getText()));
-                        rs = pst.executeQuery();
-                        tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
-                    } else {
-                        String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo, conjunto as Categoria from tbgrupos where " + lista + " and idgrupo>= ? and idgrupo <= ?";
-                        pst = conexao.prepareStatement(sql);
-                        pst.setInt(1, Integer.parseInt(txtInicial.getText()));
-                        pst.setInt(2, Integer.parseInt(txtFinal.getText()));
-                        rs = pst.executeQuery();
-                        tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
-                    }
+                System.out.println(i);
+                System.out.println(sql);
 
-                } else {
-                    if (rbNaoEnviados.isSelected() == true) {
-                        String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo, conjunto as Categoria from tbgrupos where ultimoEnvioG != current_date() and idgrupo>= ? and idgrupo <= ?";
-                        pst = conexao.prepareStatement(sql);
-                        pst.setInt(1, Integer.parseInt(txtInicial.getText()));
-                        pst.setInt(2, Integer.parseInt(txtFinal.getText()));
-                        rs = pst.executeQuery();
-                        tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
-                    } else {
-                        String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo, conjunto as Categoria from tbgrupos where idgrupo>= ? and idgrupo <= ?";
-                        pst = conexao.prepareStatement(sql);
-                        pst.setInt(1, Integer.parseInt(txtInicial.getText()));
-                        pst.setInt(2, Integer.parseInt(txtFinal.getText()));
-                        rs = pst.executeQuery();
-                        tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
-                    }
-                }
-
-            } else if (rbLimitarID.isSelected() == true && rbCliente.isSelected() == true) {
-                if (rbLimitarCategoria.isSelected() == true) {
-                    if (rbNaoEnviados.isSelected() == true) {
-                        String sql = "select idcliente as NºCliente, nomeCliente as Cliente,conjuntocliente as Categoria from tbclientes where ultimoEnvioC != current_date() " + listaCliente + " and idcliente >= ? and idcliente <= ? ";
-                        pst = conexao.prepareStatement(sql);
-                        pst.setInt(1, Integer.parseInt(txtInicial.getText()));
-                        pst.setInt(2, Integer.parseInt(txtFinal.getText()));
-                        rs = pst.executeQuery();
-                        tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
-                    } else {
-                        String sql = "select idcliente as NºCliente, nomeCliente as Cliente,conjuntocliente as Categoria from tbclientes where " + listaCliente + " and idcliente >= ? and idcliente <= ?";
-                        pst = conexao.prepareStatement(sql);
-                        pst.setInt(1, Integer.parseInt(txtInicial.getText()));
-                        pst.setInt(2, Integer.parseInt(txtFinal.getText()));
-                        rs = pst.executeQuery();
-                        tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
-                    }
-
-                } else {
-                    if (rbNaoEnviados.isSelected() == true) {
-                        String sql = "select idcliente as NºCliente, nomeCliente as Cliente,conjuntocliente as Categoria from tbclientes where ultimoEnvioC != current_date() and idcliente>= ? and idcliente <= ?";
-                        pst = conexao.prepareStatement(sql);
-                        pst.setInt(1, Integer.parseInt(txtInicial.getText()));
-                        pst.setInt(2, Integer.parseInt(txtFinal.getText()));
-                        rs = pst.executeQuery();
-                        tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
-                    } else {
-                        String sql = "select idcliente as NºCliente, nomeCliente as Cliente,conjuntocliente as Categoria from tbclientes where idcliente>= ? and idcliente <= ?";
-                        pst = conexao.prepareStatement(sql);
-                        pst.setInt(1, Integer.parseInt(txtInicial.getText()));
-                        pst.setInt(2, Integer.parseInt(txtFinal.getText()));
-                        rs = pst.executeQuery();
-                        tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
-                    }
-                }
+                pst = conexao.prepareStatement(sql);
+                rs = pst.executeQuery();
+                tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
 
             } else {
                 JOptionPane.showMessageDialog(null, "Combinação desconhecida");
             }
+
+            i = 0;
 
         } catch (java.lang.NumberFormatException e) {
 
             if (txtInicial.getText().isBlank()) {
                 txtInicial.setText("0");
             } else if (txtFinal.getText().isBlank()) {
-                txtFinal.setText(String.valueOf(tbExibicao.getRowCount()));
+                txtFinal.setText("100000");
             } else {
                 JOptionPane.showMessageDialog(null, "O ID inicial/final só aceita numeros.");
+            }
+
+        } catch (java.sql.SQLSyntaxErrorException e) {
+
+            if (txtInicial.getText().isBlank()) {
+                txtInicial.setText("0");
+            } else if (txtFinal.getText().isBlank()) {
+                txtFinal.setText("100000");
+            } else {
+                txtInicial.setText("0");
+                txtFinal.setText("100000");
+                JOptionPane.showMessageDialog(null, "LIMITAR ID SÓ ACEITA NUMEROS \n" + "Erro de sintaxe: " + e);
             }
 
         } catch (Exception e) {
@@ -271,6 +276,25 @@ public class TelaDisparo extends javax.swing.JFrame {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
             tbConfig.setModel(DbUtils.resultSetToTableModel(rs));
+
+            confDriver = tbConfig.getModel().getValueAt(0, 1).toString();
+            confExe = tbConfig.getModel().getValueAt(0, 2).toString();
+            confProf = tbConfig.getModel().getValueAt(0, 3).toString();
+            confSleepInicio = tbConfig.getModel().getValueAt(0, 4).toString();
+            confVelocidadeInicio = tbConfig.getModel().getValueAt(0, 5).toString();
+            confScroll = tbConfig.getModel().getValueAt(0, 6).toString();
+            confCaixaPesquisa = tbConfig.getModel().getValueAt(0, 7).toString();
+            confCaixaPesquisaHTML = tbConfig.getModel().getValueAt(0, 8).toString();
+            confMidiaClick = tbConfig.getModel().getValueAt(0, 9).toString();
+            confMidiaSendFile = tbConfig.getModel().getValueAt(0, 10).toString();
+            confMidiaMensagem = tbConfig.getModel().getValueAt(0, 11).toString();
+            confMidiaMensagemHTLM = tbConfig.getModel().getValueAt(0, 12).toString();
+            confMidiaSend = tbConfig.getModel().getValueAt(0, 13).toString();
+            confMensagemPath = tbConfig.getModel().getValueAt(0, 14).toString();
+            confMensagemPathHTLM = tbConfig.getModel().getValueAt(0, 15).toString();
+            confBotaoFecharPath = tbConfig.getModel().getValueAt(0, 16).toString();
+            confSleepMensagens = tbConfig.getModel().getValueAt(0, 17).toString();
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
 
@@ -279,69 +303,66 @@ public class TelaDisparo extends javax.swing.JFrame {
 
     private void PesquisarGrupo() {
         try {
-            rbLimitarCategoria.setSelected(false);
-            rbNaoEnviados.setSelected(false);
+            String sql;
 
-            if (rbLimitarID.isSelected() == false && rbGrupo.isSelected() == true) {
-                if (rbLimitarCategoria.isSelected() == true) {
+            if (rbGrupo.isSelected() == true) {
+                sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo, conjunto as Categoria from tbgrupos where nomeGrupo like ?";
 
-                } else {
-                    String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo, conjunto as Categoria from tbgrupos where nomeGrupo like ?";
-                    pst = conexao.prepareStatement(sql);
-                    pst.setString(1, txtPesquisa.getText() + "%");
-                    rs = pst.executeQuery();
-                    tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
+                if (rbLimitarID.isSelected() == true) {
+                    sql = sql + " and idgrupo>= " + txtInicial.getText() + " and idgrupo <= " + txtFinal.getText();
                 }
 
-            } else if (rbLimitarID.isSelected() == false && rbCliente.isSelected() == true) {
                 if (rbLimitarCategoria.isSelected() == true) {
-
-                } else {
-                    String sql = "select idcliente as NºCliente, nomeCliente as Cliente,conjuntocliente as Categoria from tbclientes where nomecliente like ?";
-                    pst = conexao.prepareStatement(sql);
-                    pst.setString(1, txtPesquisa.getText() + "%");
-                    rs = pst.executeQuery();
-                    tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
+                    sql = sql + " and" + lista;
                 }
 
-            } else if (rbLimitarID.isSelected() == true && rbGrupo.isSelected() == true) {
-                if (rbLimitarCategoria.isSelected() == true) {
-
-                } else {
-                    String sql = "select idgrupo as NºGrupo, nomeGrupo as Grupo, conjunto as Categoria from tbgrupos where idgrupo>= ? and idgrupo <= ? and nomeGrupo like ?";
-                    pst = conexao.prepareStatement(sql);
-                    pst.setInt(1, Integer.parseInt(txtInicial.getText()));
-                    pst.setInt(2, Integer.parseInt(txtFinal.getText()));
-                    pst.setString(3, txtPesquisa.getText() + "%");
-                    rs = pst.executeQuery();
-                    tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
+                if (rbNaoEnviados.isSelected() == true) {
+                    sql = sql + " and ultimoEnvioG != current_date()";
                 }
 
-            } else if (rbLimitarID.isSelected() == true && rbCliente.isSelected() == true) {
-                if (rbLimitarCategoria.isSelected() == true) {
+                System.out.println(sql);
 
-                } else {
-                    String sql = "select idcliente as NºCliente, nomeCliente as Cliente,conjuntocliente as Categoria from tbclientes where idcliente>= ? and idcliente <= ? and nomecliente like ?";
-                    pst = conexao.prepareStatement(sql);
-                    pst.setInt(1, Integer.parseInt(txtInicial.getText()));
-                    pst.setInt(2, Integer.parseInt(txtFinal.getText()));
-                    pst.setString(3, txtPesquisa.getText() + "%");
-                    rs = pst.executeQuery();
-                    tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, txtPesquisa.getText() + "%");
+                rs = pst.executeQuery();
+                tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
+
+            } else if (rbCliente.isSelected() == true) {
+                sql = "select idcliente as NºCliente, nomeCliente as Cliente,conjuntocliente as Categoria from tbclientes where nomecliente like ?";
+
+                if (rbLimitarID.isSelected() == true) {
+                    sql = sql + " and idcliente>= " + txtInicial.getText() + " and idcliente <= " + txtFinal.getText();
                 }
+
+                if (rbLimitarCategoria.isSelected() == true) {
+                    sql = sql + " and" + listaCliente;
+                }
+
+                if (rbNaoEnviados.isSelected() == true) {
+                    sql = sql + " and ultimoEnvioC != current_date()";
+                }
+
+                System.out.println(sql);
+
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, txtPesquisa.getText() + "%");
+                rs = pst.executeQuery();
+                tbExibicao.setModel(DbUtils.resultSetToTableModel(rs));
 
             } else {
                 JOptionPane.showMessageDialog(null, "Combinação desconhecida");
             }
 
         } catch (java.lang.NumberFormatException e) {
+
             if (txtInicial.getText().isBlank()) {
                 txtInicial.setText("0");
             } else if (txtFinal.getText().isBlank()) {
-                txtFinal.setText(String.valueOf(tbExibicao.getRowCount()));
+                txtFinal.setText("100000");
             } else {
                 JOptionPane.showMessageDialog(null, "O ID inicial/final só aceita numeros.");
             }
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
 
@@ -462,15 +483,15 @@ public class TelaDisparo extends javax.swing.JFrame {
             /**
              * Configuração do Chrome*
              */
-            System.setProperty("webdriver.chorme.driver", tbConfig.getModel().getValueAt(0, 1).toString());
+            System.setProperty("webdriver.chorme.driver", confDriver);
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--disable-dev-shm-usage");
             options.addArguments("--ignore-ssl-errors=yes");
             options.addArguments("--ignore-certificate-errors");
             options.addArguments("--remote-allow-origins=*");
             options.addArguments("chrome.switches", "--disable-extensions");
-            options.addArguments("--user-data-dir=" + tbConfig.getModel().getValueAt(0, 3).toString());
-            options.setBinary(tbConfig.getModel().getValueAt(0, 2).toString());
+            options.addArguments("--user-data-dir=" + confProf);
+            options.setBinary(confExe);
 
             /**
              * Configuração do Driver && Lista de Mensagens selecionadas*
@@ -483,11 +504,11 @@ public class TelaDisparo extends javax.swing.JFrame {
             /**
              * Configuração do Driver && Lista de Mensagens selecionadas*
              */
-            Thread.sleep(Integer.parseInt(tbConfig.getModel().getValueAt(0, 4).toString()));
+            Thread.sleep(Integer.parseInt(confSleepInicio));
             js = (JavascriptExecutor) driver;
 
-            for (int d = 1; d <= 500000; d = d + Integer.parseInt(tbConfig.getModel().getValueAt(0, 5).toString())) {
-                js.executeScript(tbConfig.getModel().getValueAt(0, 6).toString() + d + ");");
+            for (int d = 1; d <= 500000; d = d + Integer.parseInt(confVelocidadeInicio)) {
+                js.executeScript(confScroll + d + ");");
 
             }
             Thread.sleep(10000);
@@ -495,65 +516,29 @@ public class TelaDisparo extends javax.swing.JFrame {
             /**
              * Disparo*
              */
-            int contagem = 0;
-            Robot robot = new Robot();
-
+            
             for (int i = 0; i < tbExibicao.getRowCount(); i++) {
                 aux = i;
 
-                System.out.println(contagem);
+                Thread.sleep(2000);
+                apagarPesquisa();
+                Thread.sleep(2000);
+                pesquisarNome();
+                Thread.sleep(2000);
+                validarNome();
 
-                if (contagem == 100 == true) {
-                    Thread.sleep(2000);
-                    robot.keyPress(KeyEvent.VK_F5);
-                    Thread.sleep(1000);
-                    robot.keyPress(KeyEvent.VK_ENTER);
-                    Thread.sleep(1000);
-                    robot.keyPress(KeyEvent.VK_ENTER);
-                    Thread.sleep(Integer.parseInt(tbConfig.getModel().getValueAt(0, 7).toString()));
+                if (Certificar == null) {
+                    listaNegra();
 
-                    for (int d = 1; d <= 500000; d = d + Integer.parseInt(tbConfig.getModel().getValueAt(0, 8).toString())) {
-                        js.executeScript(tbConfig.getModel().getValueAt(0, 6).toString() + d + ");");
-
-                    }
-
-                    Thread.sleep(2000);
-                    apagarPesquisa();
-                    Thread.sleep(2000);
-                    pesquisarNome();
-                    Thread.sleep(2000);
-                    validarNome();
-
-                    if (Certificar == null) {
-                        listaNegra();
-
-                    } else if (Certificar.getAttribute("title").equals(tbExibicao.getModel().getValueAt(i, 1).toString()) == true) {
-                        mensagemDisparo();
-                    }
-
-                    contagem = 0;
-
-                } else {
-
-                    Thread.sleep(2000);
-                    apagarPesquisa();
-                    Thread.sleep(2000);
-                    pesquisarNome();
-                    Thread.sleep(2000);
-                    validarNome();
-
-                    if (Certificar == null) {
-                        listaNegra();
-
-                    } else if (Certificar.getAttribute("title").equals(tbExibicao.getModel().getValueAt(i, 1).toString()) == true) {
-                        mensagemDisparo();
-                    }
-
-                    contagem++;
+                } else if (Certificar.getAttribute("title").equals(tbExibicao.getModel().getValueAt(i, 1).toString()) == true) {
+                    mensagemDisparo();
                 }
+
             }
 
-        } catch (Exception e) {
+        } catch (org.openqa.selenium.remote.UnreachableBrowserException e) {
+            
+        }catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Disparo error: " + e);
             Limpar();
         }
@@ -611,7 +596,7 @@ public class TelaDisparo extends javax.swing.JFrame {
 
     private void apagarPesquisa() {
         try {
-            driver.findElement(By.cssSelector(tbConfig.getModel().getValueAt(0, 9).toString())).click();
+            driver.findElement(By.cssSelector(confCaixaPesquisa)).click();
             Thread.sleep(100);
             for (int n = 0; n <= 100; n++) {
                 Thread.sleep(1);
@@ -619,7 +604,9 @@ public class TelaDisparo extends javax.swing.JFrame {
                 Thread.sleep(1);
                 act.sendKeys(Keys.BACK_SPACE).perform();
             }
-        } catch (Exception e) {
+        } catch (org.openqa.selenium.remote.UnreachableBrowserException e) {
+            
+        }catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Apagar Erro:" + e);
             Limpar();
         }
@@ -627,14 +614,17 @@ public class TelaDisparo extends javax.swing.JFrame {
 
     private void pesquisarNome() {
         try {
-            driver.findElement(By.cssSelector(tbConfig.getModel().getValueAt(0, 9).toString())).click();
-            Thread.sleep(500);
+            driver.findElement(By.cssSelector(confCaixaPesquisa)).click();
+            Thread.sleep(Integer.parseInt(confSleepMensagens));
             act.sendKeys(".").perform();
-            Thread.sleep(500);
+            Thread.sleep(Integer.parseInt(confSleepMensagens));
             js = (JavascriptExecutor) driver;
-            js.executeScript(tbConfig.getModel().getValueAt(0, 10).toString() + tbExibicao.getModel().getValueAt(aux, 1).toString() + "';");
+            js.executeScript(confCaixaPesquisaHTML + tbExibicao.getModel().getValueAt(aux, 1).toString() + "';");
+            act.sendKeys(Keys.ENTER).perform();
 
-        } catch (Exception e) {
+        } catch (org.openqa.selenium.remote.UnreachableBrowserException e) {
+            
+        }catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Pesquisar Erro:" + e);
             Limpar();
         }
@@ -643,6 +633,8 @@ public class TelaDisparo extends javax.swing.JFrame {
     private void validarNome() throws InterruptedException {
         try {
             Certificar = driver.findElement(By.cssSelector("span[title='" + tbExibicao.getModel().getValueAt(aux, 1).toString() + "']"));
+        } catch (org.openqa.selenium.remote.UnreachableBrowserException e) {
+            
         } catch (org.openqa.selenium.NoSuchElementException e) {
             Certificar = null;
         } catch (Exception e) {
@@ -664,7 +656,9 @@ public class TelaDisparo extends javax.swing.JFrame {
 
             pst.executeUpdate();
 
-        } catch (Exception e) {
+        } catch (org.openqa.selenium.remote.UnreachableBrowserException e) {
+            
+        }catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Lista Negra Error:" + e);
 
         }
@@ -681,28 +675,29 @@ public class TelaDisparo extends javax.swing.JFrame {
             js = (JavascriptExecutor) driver;
 
             for (int o = 0; o < tbAux.getRowCount(); o++) {
+                contagemMensagem = o;
                 if (tbAux.getModel().getValueAt(o, 1).toString().isBlank() == false) {
                     Thread.sleep(2000);
-                    driver.findElement(By.cssSelector(tbConfig.getModel().getValueAt(0, 11).toString())).click();
+                    driver.findElement(By.cssSelector(confMidiaClick)).click();
                     Thread.sleep(2000);
-                    driver.findElement(By.cssSelector(tbConfig.getModel().getValueAt(0, 12).toString())).sendKeys(tbAux.getModel().getValueAt(o, 1).toString());
+                    driver.findElement(By.cssSelector(confMidiaSendFile)).sendKeys(tbAux.getModel().getValueAt(o, 1).toString());
                     Thread.sleep(10000);
-                    driver.findElement(By.cssSelector(tbConfig.getModel().getValueAt(0, 13).toString())).click();
-                    Thread.sleep(500);
+                    driver.findElement(By.cssSelector(confMidiaMensagem)).click();
+                    Thread.sleep(Integer.parseInt(confSleepMensagens));
                     act.sendKeys(".").perform();
-                    Thread.sleep(500);
-                    js.executeScript(tbConfig.getModel().getValueAt(0, 14).toString() + tbAux.getModel().getValueAt(o, 0).toString() + "';");
+                    Thread.sleep(Integer.parseInt(confSleepMensagens));
+                    js.executeScript(confMidiaMensagemHTLM + tbAux.getModel().getValueAt(o, 0).toString() + "';");
                     Thread.sleep(1000);
-                    driver.findElement(By.cssSelector(tbConfig.getModel().getValueAt(0, 15).toString())).click();
+                    driver.findElement(By.cssSelector(confMidiaSend)).click();
                     Thread.sleep(1000);
 
                 } else if (tbAux.getModel().getValueAt(o, 1).toString().isBlank() == true) {
                     Thread.sleep(2000);
-                    driver.findElement(By.cssSelector(tbConfig.getModel().getValueAt(0, 16).toString())).click();
-                    Thread.sleep(500);
+                    driver.findElement(By.cssSelector(confMensagemPath)).click();
+                    Thread.sleep(Integer.parseInt(confSleepMensagens));
                     act.sendKeys(".").perform();
-                    Thread.sleep(500);
-                    js.executeScript(tbConfig.getModel().getValueAt(0, 17).toString() + tbAux.getModel().getValueAt(o, 0).toString() + "';");
+                    Thread.sleep(Integer.parseInt(confSleepMensagens));
+                    js.executeScript(confMensagemPathHTLM + tbAux.getModel().getValueAt(o, 0).toString() + "';");
                     Thread.sleep(1000);
                     act.sendKeys(Keys.ENTER).perform();
                     Thread.sleep(1000);
@@ -710,7 +705,16 @@ public class TelaDisparo extends javax.swing.JFrame {
             }
             ultimoEnvio();
 
-        } catch (Exception e) {
+        } catch (org.openqa.selenium.remote.UnreachableBrowserException e) {
+            
+        }catch (org.openqa.selenium.ElementNotInteractableException e) {
+            if (tbAux.getModel().getValueAt(contagemMensagem, 1).toString().isBlank() == false) {
+                   driver.findElement(By.cssSelector(confBotaoFecharPath)).click();
+                } else if (tbAux.getModel().getValueAt(contagemMensagem, 1).toString().isBlank() == true) {
+                    JOptionPane.showMessageDialog(null, "Mensagem Escrita Erro:" + e);
+                }
+            
+        }catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Mensagem Erro:" + e);
             Limpar();
         }
@@ -740,7 +744,9 @@ public class TelaDisparo extends javax.swing.JFrame {
                 pst.setString(2, tbExibicao.getModel().getValueAt(aux, 1).toString());
                 pst.executeUpdate();
             }
-        } catch (Exception e) {
+        } catch (org.openqa.selenium.remote.UnreachableBrowserException e) {
+            
+        }catch (Exception e) {
             JOptionPane.showMessageDialog(null, "UltimoEnvio error: " + e);
 
         }
@@ -761,7 +767,7 @@ public class TelaDisparo extends javax.swing.JFrame {
         scAux = new javax.swing.JScrollPane();
         tbAux = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
+        pnExibição = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbExibicao = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
@@ -786,15 +792,18 @@ public class TelaDisparo extends javax.swing.JFrame {
         tbMensagemSelecionada = new javax.swing.JTable();
         btnEnviarMensagem = new javax.swing.JButton();
         btnRemoverMensagem = new javax.swing.JButton();
-        rbNaoEnviados = new javax.swing.JRadioButton();
+        btnDisparar = new javax.swing.JButton();
         jPanel10 = new javax.swing.JPanel();
-        rbGrupo = new javax.swing.JRadioButton();
+        jPanel5 = new javax.swing.JPanel();
+        rbNaoEnviados = new javax.swing.JRadioButton();
+        jPanel6 = new javax.swing.JPanel();
         rbCliente = new javax.swing.JRadioButton();
+        rbGrupo = new javax.swing.JRadioButton();
+        jPanel7 = new javax.swing.JPanel();
         rbLimitarID = new javax.swing.JRadioButton();
         txtInicial = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         txtFinal = new javax.swing.JTextField();
-        btnDisparar = new javax.swing.JButton();
 
         tbConfig.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -836,8 +845,8 @@ public class TelaDisparo extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(204, 204, 204));
         jPanel1.setForeground(new java.awt.Color(255, 255, 255));
 
-        jPanel2.setBackground(new java.awt.Color(204, 204, 204));
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Grupos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
+        pnExibição.setBackground(new java.awt.Color(204, 204, 204));
+        pnExibição.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Grupos", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
 
         tbExibicao = new javax.swing.JTable(){
             public boolean isCellEditable(int rowIndex, int colIndex){
@@ -871,26 +880,30 @@ public class TelaDisparo extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        javax.swing.GroupLayout pnExibiçãoLayout = new javax.swing.GroupLayout(pnExibição);
+        pnExibição.setLayout(pnExibiçãoLayout);
+        pnExibiçãoLayout.setHorizontalGroup(
+            pnExibiçãoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnExibiçãoLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtPesquisa))
+                .addGroup(pnExibiçãoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addGroup(pnExibiçãoLayout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtPesquisa)))
+                .addContainerGap())
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+        pnExibiçãoLayout.setVerticalGroup(
+            pnExibiçãoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnExibiçãoLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(pnExibiçãoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(txtPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1)
+                .addContainerGap())
         );
 
         jPanel3.setBackground(new java.awt.Color(204, 204, 204));
@@ -930,11 +943,11 @@ public class TelaDisparo extends javax.swing.JFrame {
         pnCategoriaSelecionada.setLayout(pnCategoriaSelecionadaLayout);
         pnCategoriaSelecionadaLayout.setHorizontalGroup(
             pnCategoriaSelecionadaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
         pnCategoriaSelecionadaLayout.setVerticalGroup(
             pnCategoriaSelecionadaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
 
         pnCategoria.setBackground(new java.awt.Color(204, 204, 204));
@@ -968,7 +981,7 @@ public class TelaDisparo extends javax.swing.JFrame {
         pnCategoria.setLayout(pnCategoriaLayout);
         pnCategoriaLayout.setHorizontalGroup(
             pnCategoriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
         pnCategoriaLayout.setVerticalGroup(
             pnCategoriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1013,16 +1026,16 @@ public class TelaDisparo extends javax.swing.JFrame {
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel13Layout.createSequentialGroup()
                         .addComponent(rbLimitarCategoria)
-                        .addGap(0, 285, Short.MAX_VALUE))
+                        .addGap(0, 235, Short.MAX_VALUE))
                     .addGroup(jPanel13Layout.createSequentialGroup()
                         .addComponent(pnCategoria, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnEnviarCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnRemoverCategoria, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addComponent(pnCategoriaSelecionada, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(pnCategoriaSelecionada, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())))
         );
         jPanel13Layout.setVerticalGroup(
             jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1031,17 +1044,17 @@ public class TelaDisparo extends javax.swing.JFrame {
                 .addComponent(rbLimitarCategoria)
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel13Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 71, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnEnviarCategoria)
-                        .addGap(68, 68, 68)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnRemoverCategoria)
-                        .addGap(85, 85, 85))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel13Layout.createSequentialGroup()
                         .addGap(17, 17, 17)
-                        .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(pnCategoriaSelecionada, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(pnCategoria, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addContainerGap())))
         );
 
         jPanel14.setBackground(new java.awt.Color(204, 204, 204));
@@ -1151,35 +1164,37 @@ public class TelaDisparo extends javax.swing.JFrame {
             .addGroup(jPanel14Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(26, 26, 26)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnEnviarMensagem, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnRemoverMensagem, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(26, 26, 26)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel14Layout.setVerticalGroup(
             jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel14Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel14Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(btnEnviarMensagem)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnRemoverMensagem)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel14Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jPanel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel14Layout.createSequentialGroup()
-                .addGap(66, 66, 66)
-                .addComponent(btnEnviarMensagem)
-                .addGap(57, 57, 57)
-                .addComponent(btnRemoverMensagem)
-                .addContainerGap(72, Short.MAX_VALUE))
         );
 
-        rbNaoEnviados.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        rbNaoEnviados.setText("Somente não enviados");
-        rbNaoEnviados.addActionListener(new java.awt.event.ActionListener() {
+        btnDisparar.setBackground(new java.awt.Color(0, 0, 153));
+        btnDisparar.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        btnDisparar.setForeground(new java.awt.Color(255, 255, 255));
+        btnDisparar.setText("Disparar");
+        btnDisparar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rbNaoEnviadosActionPerformed(evt);
+                btnDispararActionPerformed(evt);
             }
         });
 
@@ -1190,27 +1205,65 @@ public class TelaDisparo extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel14, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel13, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(rbNaoEnviados)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                    .addComponent(jPanel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnDisparar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(12, 12, 12)
+                .addComponent(jPanel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(rbNaoEnviados)
+                .addComponent(btnDisparar, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
         jPanel10.setBackground(new java.awt.Color(204, 204, 204));
-        jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Disparar para", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
+        jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Filtros", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
+
+        jPanel5.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel5.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        rbNaoEnviados.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        rbNaoEnviados.setText("Somente não enviados");
+        rbNaoEnviados.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbNaoEnviadosActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(rbNaoEnviados)
+                .addContainerGap(8, Short.MAX_VALUE))
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(rbNaoEnviados)
+                .addContainerGap())
+        );
+
+        jPanel6.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel6.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        alvo.add(rbCliente);
+        rbCliente.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        rbCliente.setText("Clientes");
+        rbCliente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbClienteActionPerformed(evt);
+            }
+        });
 
         alvo.add(rbGrupo);
         rbGrupo.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
@@ -1222,17 +1275,37 @@ public class TelaDisparo extends javax.swing.JFrame {
             }
         });
 
-        alvo.add(rbCliente);
-        rbCliente.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        rbCliente.setText("Clientes");
-        rbCliente.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                rbClienteActionPerformed(evt);
-            }
-        });
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(rbGrupo)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(rbCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(8, 8, 8))
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(rbGrupo)
+                    .addComponent(rbCliente))
+                .addGap(15, 15, 15))
+        );
+
+        jPanel7.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel7.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         rbLimitarID.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
         rbLimitarID.setText("Limitar de ");
+        rbLimitarID.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                rbLimitarIDMouseClicked(evt);
+            }
+        });
         rbLimitarID.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rbLimitarIDActionPerformed(evt);
@@ -1256,16 +1329,12 @@ public class TelaDisparo extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
-        jPanel10.setLayout(jPanel10Layout);
-        jPanel10Layout.setHorizontalGroup(
-            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel10Layout.createSequentialGroup()
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(rbGrupo)
-                .addGap(18, 18, 18)
-                .addComponent(rbCliente)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 68, Short.MAX_VALUE)
                 .addComponent(rbLimitarID)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtInicial, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1273,47 +1342,57 @@ public class TelaDisparo extends javax.swing.JFrame {
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtFinal, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(rbLimitarID)
+                    .addComponent(txtInicial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2)
+                    .addComponent(txtFinal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
+        );
+
+        javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
+        jPanel10.setLayout(jPanel10Layout);
+        jPanel10Layout.setHorizontalGroup(
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel10Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel10Layout.createSequentialGroup()
+                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap(17, Short.MAX_VALUE))
         );
         jPanel10Layout.setVerticalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel10Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(rbGrupo)
-                    .addComponent(rbCliente)
-                    .addComponent(rbLimitarID)
-                    .addComponent(txtInicial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2)
-                    .addComponent(txtFinal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-
-        btnDisparar.setBackground(new java.awt.Color(0, 0, 153));
-        btnDisparar.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        btnDisparar.setForeground(new java.awt.Color(255, 255, 255));
-        btnDisparar.setText("Disparar");
-        btnDisparar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDispararActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(btnDisparar, javax.swing.GroupLayout.PREFERRED_SIZE, 766, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                    .addComponent(pnExibição, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -1321,16 +1400,12 @@ public class TelaDisparo extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnDisparar, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(6, 6, 6))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(pnExibição, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGap(6, 6, 6))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -1372,12 +1447,7 @@ public class TelaDisparo extends javax.swing.JFrame {
 
     private void rbGrupoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbGrupoActionPerformed
         // TODO add your handling code here:
-        Limpar();
-        rbLimitarID.setSelected(false);
-        rbLimitarCategoria.setSelected(false);
-        Limitar();
-        instanciarCategoria();
-        instanciarTabela();
+        setGrupo();
 
     }//GEN-LAST:event_rbGrupoActionPerformed
 
@@ -1409,12 +1479,7 @@ public class TelaDisparo extends javax.swing.JFrame {
 
     private void rbClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbClienteActionPerformed
         // TODO add your handling code here:
-        Limpar();
-        rbLimitarID.setSelected(false);
-        rbLimitarCategoria.setSelected(false);
-        Limitar();
-        instanciarCategoria();
-        instanciarTabela();
+        setCliente();
     }//GEN-LAST:event_rbClienteActionPerformed
 
     private void tbExibicaoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbExibicaoMouseClicked
@@ -1469,6 +1534,11 @@ public class TelaDisparo extends javax.swing.JFrame {
         instanciarTabela();
     }//GEN-LAST:event_rbNaoEnviadosActionPerformed
 
+    private void rbLimitarIDMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_rbLimitarIDMouseClicked
+        // TODO add your handling code here:
+        instanciarTabela();
+    }//GEN-LAST:event_rbLimitarIDMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -1519,8 +1589,10 @@ public class TelaDisparo extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
@@ -1528,6 +1600,7 @@ public class TelaDisparo extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JPanel pnCategoria;
     private javax.swing.JPanel pnCategoriaSelecionada;
+    private javax.swing.JPanel pnExibição;
     private javax.swing.JRadioButton rbCliente;
     private javax.swing.JRadioButton rbGrupo;
     private javax.swing.JRadioButton rbLimitarCategoria;
