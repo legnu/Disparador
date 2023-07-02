@@ -51,7 +51,7 @@ public class TelaDisparo extends javax.swing.JFrame {
     WebDriver driver;
     Actions act;
 
-    int aux;
+    int aux = 0;
     int contagemMensagem;
 
     String confDriver;
@@ -477,12 +477,14 @@ public class TelaDisparo extends javax.swing.JFrame {
     /**
      * O conjunto de objetos abaixo são responsaveis pelo disparo
      */
+    
     private void disparar() {
         try {
 
             /**
              * Configuração do Chrome*
              */
+            
             System.setProperty("webdriver.chorme.driver", confDriver);
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--disable-dev-shm-usage");
@@ -496,6 +498,7 @@ public class TelaDisparo extends javax.swing.JFrame {
             /**
              * Configuração do Driver && Lista de Mensagens selecionadas*
              */
+            
             montarMensagem();
             driver = new ChromeDriver(options);
             act = new Actions(driver);
@@ -504,6 +507,7 @@ public class TelaDisparo extends javax.swing.JFrame {
             /**
              * Configuração do Driver && Lista de Mensagens selecionadas*
              */
+            
             Thread.sleep(Integer.parseInt(confSleepInicio));
             js = (JavascriptExecutor) driver;
 
@@ -518,31 +522,37 @@ public class TelaDisparo extends javax.swing.JFrame {
              */
             
             for (int i = 0; i < tbExibicao.getRowCount(); i++) {
-                aux = i;
 
-                Thread.sleep(2000);
+                Thread.sleep(1000);
                 apagarPesquisa();
-                Thread.sleep(2000);
+                Thread.sleep(1000);
                 pesquisarNome();
-                Thread.sleep(2000);
+                Thread.sleep(1000);
                 validarNome();
 
                 if (Certificar == null) {
                     listaNegra();
 
-                } else if (Certificar.getAttribute("title").equals(tbExibicao.getModel().getValueAt(i, 1).toString()) == true) {
+                } else if (Certificar.getAttribute("title").equals(tbExibicao.getModel().getValueAt(aux, 1).toString()) == true) {
                     mensagemDisparo();
                 }
+                
+                aux++;
 
             }
 
         } catch (org.openqa.selenium.remote.UnreachableBrowserException e) {
             
-        }catch (Exception e) {
+        } catch (org.openqa.selenium.WebDriverException e) {
+            driver.quit();
+            disparar();
+            
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Disparo error: " + e);
             Limpar();
         }
     }
+    
 
     private void montarMensagem() {
         try {
@@ -606,6 +616,8 @@ public class TelaDisparo extends javax.swing.JFrame {
             }
         } catch (org.openqa.selenium.remote.UnreachableBrowserException e) {
             
+        } catch (org.openqa.selenium.WebDriverException e) {
+            
         }catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Apagar Erro:" + e);
             Limpar();
@@ -624,7 +636,9 @@ public class TelaDisparo extends javax.swing.JFrame {
 
         } catch (org.openqa.selenium.remote.UnreachableBrowserException e) {
             
-        }catch (Exception e) {
+        } catch (org.openqa.selenium.WebDriverException e) {
+            
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Pesquisar Erro:" + e);
             Limpar();
         }
@@ -632,11 +646,14 @@ public class TelaDisparo extends javax.swing.JFrame {
 
     private void validarNome() throws InterruptedException {
         try {
+            Thread.sleep(Integer.parseInt(confSleepMensagens));
             Certificar = driver.findElement(By.cssSelector("span[title='" + tbExibicao.getModel().getValueAt(aux, 1).toString() + "']"));
         } catch (org.openqa.selenium.remote.UnreachableBrowserException e) {
             
         } catch (org.openqa.selenium.NoSuchElementException e) {
             Certificar = null;
+        } catch (org.openqa.selenium.WebDriverException e) {
+            
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Nome Erro:" + e);
             Limpar();
@@ -658,7 +675,9 @@ public class TelaDisparo extends javax.swing.JFrame {
 
         } catch (org.openqa.selenium.remote.UnreachableBrowserException e) {
             
-        }catch (Exception e) {
+        } catch (org.openqa.selenium.WebDriverException e) {
+            
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Lista Negra Error:" + e);
 
         }
@@ -714,7 +733,9 @@ public class TelaDisparo extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(null, "Mensagem Escrita Erro:" + e);
                 }
             
-        }catch (Exception e) {
+        } catch (org.openqa.selenium.WebDriverException e) {
+            
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Mensagem Erro:" + e);
             Limpar();
         }
@@ -746,7 +767,9 @@ public class TelaDisparo extends javax.swing.JFrame {
             }
         } catch (org.openqa.selenium.remote.UnreachableBrowserException e) {
             
-        }catch (Exception e) {
+        } catch (org.openqa.selenium.WebDriverException e) {
+            
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "UltimoEnvio error: " + e);
 
         }
