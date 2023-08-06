@@ -28,6 +28,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.firefox.ProfilesIni;
 import org.openqa.selenium.interactions.Actions;
 
 /**
@@ -53,6 +57,8 @@ public class TelaDisparo extends javax.swing.JFrame {
 
     int aux = 0;
     int contagemMensagem;
+
+    int forScroll = 0;
 
     String confDriver;
     String confExe;
@@ -477,82 +483,115 @@ public class TelaDisparo extends javax.swing.JFrame {
     /**
      * O conjunto de objetos abaixo são responsaveis pelo disparo
      */
-    
     private void disparar() {
         try {
 
             /**
-             * Configuração do Chrome*
+             * Configuração do Navegador*
              */
             
-            System.setProperty("webdriver.chorme.driver", confDriver);
-            ChromeOptions options = new ChromeOptions();
-            options.addArguments("--disable-dev-shm-usage");
-            options.addArguments("--ignore-ssl-errors=yes");
-            options.addArguments("--ignore-certificate-errors");
-            options.addArguments("--remote-allow-origins=*");
-            options.addArguments("chrome.switches", "--disable-extensions");
-            options.addArguments("--user-data-dir=" + confProf);
+            
+            System.setProperty("webdriver.gecko.driver", confDriver);
+            FirefoxOptions options = new FirefoxOptions();
             options.setBinary(confExe);
-
+            
+            File firefoxProfileFolder = new File(confProf);
+            FirefoxProfile profile = new FirefoxProfile(firefoxProfileFolder); 
+            profile.setAcceptUntrustedCertificates(true);
+            options.setProfile(profile);            
+            
             /**
              * Configuração do Driver && Lista de Mensagens selecionadas*
              */
-            
             montarMensagem();
-            driver = new ChromeDriver(options);
+            driver = new FirefoxDriver(options);
             act = new Actions(driver);
             driver.get("https://web.whatsapp.com/");
 
             /**
              * Configuração do Driver && Lista de Mensagens selecionadas*
              */
-            
-            Thread.sleep(Integer.parseInt(confSleepInicio));
-            js = (JavascriptExecutor) driver;
+            descerScroll();
 
-            for (int d = 1; d <= 500000; d = d + Integer.parseInt(confVelocidadeInicio)) {
-                js.executeScript(confScroll + d + ");");
+            if (forScroll >= 500000) {
 
-            }
-            Thread.sleep(10000);
+                /**
+                 * Disparo*
+                 */
+                for (int i = 0; i < tbExibicao.getRowCount(); i++) {
 
-            /**
-             * Disparo*
-             */
-            
-            for (int i = 0; i < tbExibicao.getRowCount(); i++) {
-
-                Thread.sleep(1000);
-                apagarPesquisa();
-                Thread.sleep(1000);
-                pesquisarNome();
-                Thread.sleep(1000);
-                validarNome();
-
-                if (Certificar == null) {
-                    listaNegra();
-
-                } else if (Certificar.getAttribute("title").equals(tbExibicao.getModel().getValueAt(aux, 1).toString()) == true) {
+                    Thread.sleep(1000);
+                    pesquisarNome();
+                    Thread.sleep(3000);
                     mensagemDisparo();
-                }
-                
-                aux++;
+                    
 
+                    aux++;
+
+                }
             }
 
         } catch (org.openqa.selenium.remote.UnreachableBrowserException e) {
-            
+            System.out.println("Disparo: " + e);
+
         } catch (org.openqa.selenium.WebDriverException e) {
-            driver.quit();
-            disparar();
+            JOptionPane.showMessageDialog(null, "Disparo error: " + e);
+            diferenciarFechamento();
             
+            System.out.println("Disparo: " + e);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Disparo error: " + e);
+            System.out.println("Disparo: " + e);
             Limpar();
         }
     }
-    
+
+    private void diferenciarFechamento() {
+        try {
+            int o = JOptionPane.showConfirmDialog(null, "O disparo foi interrompido, você deseja continua-lo?");
+            if (o == 0) {
+                driver.quit();
+                disparar();
+            } else if (o == 1) {
+                driver.quit();
+            } else {
+                driver.quit();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Decida error: " + e);
+            System.out.println("Decida: " + e);
+            Limpar();
+        }
+    }
+
+    private void descerScroll() {
+        try {
+            Thread.sleep(Integer.parseInt(confSleepInicio));
+            js = (JavascriptExecutor) driver;           
+
+            for (forScroll = 1; forScroll <= 400000; forScroll = forScroll + Integer.parseInt(confVelocidadeInicio)) {
+                js.executeScript(confScroll + forScroll + ");");
+            }
+            
+            for (forScroll = 400000; forScroll <= 0; forScroll = forScroll - Integer.parseInt(confVelocidadeInicio)) {
+                js.executeScript(confScroll + forScroll + ");");
+            }
+            
+            for (forScroll = 1; forScroll <= 500000; forScroll = forScroll + Integer.parseInt(confVelocidadeInicio)) {
+                js.executeScript(confScroll + forScroll + ");");
+            }
+
+        } catch (org.openqa.selenium.JavascriptException e) {
+            JOptionPane.showMessageDialog(null, "Scroll não encontrado, aumente o tempo (SleepInicio)");
+            System.out.println("Scroll: " + e);
+            driver.quit();
+            Limpar();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Decida error: " + e);
+            System.out.println("Scroll: " + e);
+            Limpar();
+        }
+    }
 
     private void montarMensagem() {
         try {
@@ -600,6 +639,7 @@ public class TelaDisparo extends javax.swing.JFrame {
             tbAux.setModel(DbUtils.resultSetToTableModel(rs));
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
+            System.out.println("Montar Mensagem : " + e);
             Limpar();
         }
     }
@@ -607,55 +647,62 @@ public class TelaDisparo extends javax.swing.JFrame {
     private void apagarPesquisa() {
         try {
             driver.findElement(By.cssSelector(confCaixaPesquisa)).click();
-            Thread.sleep(100);
             for (int n = 0; n <= 100; n++) {
-                Thread.sleep(1);
+                Thread.sleep(0, 5);
                 act.sendKeys(Keys.DELETE).perform();
-                Thread.sleep(1);
+            }
+            for (int n = 0; n <= 100; n++) {
+                Thread.sleep(0, 5);
                 act.sendKeys(Keys.BACK_SPACE).perform();
             }
+
         } catch (org.openqa.selenium.remote.UnreachableBrowserException e) {
-            
+
         } catch (org.openqa.selenium.WebDriverException e) {
-            
-        }catch (Exception e) {
+
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Apagar Erro:" + e);
+            System.out.println("Apagar Pesquisa : " + e);
             Limpar();
         }
     }
 
     private void pesquisarNome() {
         try {
+            apagarPesquisa();
             driver.findElement(By.cssSelector(confCaixaPesquisa)).click();
-            Thread.sleep(Integer.parseInt(confSleepMensagens));
+            Thread.sleep(500);
             act.sendKeys(".").perform();
             Thread.sleep(Integer.parseInt(confSleepMensagens));
             js = (JavascriptExecutor) driver;
             js.executeScript(confCaixaPesquisaHTML + tbExibicao.getModel().getValueAt(aux, 1).toString() + "';");
-            act.sendKeys(Keys.ENTER).perform();
 
         } catch (org.openqa.selenium.remote.UnreachableBrowserException e) {
-            
+            System.out.println("Pesquisar Nome: " + e);
+
         } catch (org.openqa.selenium.WebDriverException e) {
-            
+            System.out.println("Pesquisar Nome: " + e);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Pesquisar Erro:" + e);
+            System.out.println("Pesquisar Nome: " + e);
             Limpar();
         }
     }
 
-    private void validarNome() throws InterruptedException {
+    private void validarNome() {
         try {
             Thread.sleep(Integer.parseInt(confSleepMensagens));
             Certificar = driver.findElement(By.cssSelector("span[title='" + tbExibicao.getModel().getValueAt(aux, 1).toString() + "']"));
         } catch (org.openqa.selenium.remote.UnreachableBrowserException e) {
-            
+
         } catch (org.openqa.selenium.NoSuchElementException e) {
+            System.out.println("Validar Nome: " + e);
             Certificar = null;
         } catch (org.openqa.selenium.WebDriverException e) {
-            
+            System.out.println("Validar Nome: " + e);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Nome Erro:" + e);
+            System.out.println("Validar Nome: " + e);
             Limpar();
         }
     }
@@ -674,35 +721,32 @@ public class TelaDisparo extends javax.swing.JFrame {
             pst.executeUpdate();
 
         } catch (org.openqa.selenium.remote.UnreachableBrowserException e) {
-            
+            System.out.println("Lista Negra: " + e);
         } catch (org.openqa.selenium.WebDriverException e) {
-            
+            System.out.println("Lista Negra: " + e);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Lista Negra Error:" + e);
-
+            System.out.println("Lista Negra: " + e);
         }
     }
 
     private void mensagemDisparo() {
         try {
-
-            Thread.sleep(2000);
             driver.findElement(By.cssSelector("span[title='" + tbExibicao.getModel().getValueAt(aux, 1).toString() + "']")).click();
-            Thread.sleep(6000);
+            Thread.sleep(2000);
 
-            System.out.println(tbAux.getRowCount());
             js = (JavascriptExecutor) driver;
 
             for (int o = 0; o < tbAux.getRowCount(); o++) {
                 contagemMensagem = o;
                 if (tbAux.getModel().getValueAt(o, 1).toString().isBlank() == false) {
-                    Thread.sleep(2000);
+                    Thread.sleep(1000);
                     driver.findElement(By.cssSelector(confMidiaClick)).click();
-                    Thread.sleep(2000);
+                    Thread.sleep(1000);
                     driver.findElement(By.cssSelector(confMidiaSendFile)).sendKeys(tbAux.getModel().getValueAt(o, 1).toString());
                     Thread.sleep(10000);
                     driver.findElement(By.cssSelector(confMidiaMensagem)).click();
-                    Thread.sleep(Integer.parseInt(confSleepMensagens));
+                    Thread.sleep(500);
                     act.sendKeys(".").perform();
                     Thread.sleep(Integer.parseInt(confSleepMensagens));
                     js.executeScript(confMidiaMensagemHTLM + tbAux.getModel().getValueAt(o, 0).toString() + "';");
@@ -711,9 +755,9 @@ public class TelaDisparo extends javax.swing.JFrame {
                     Thread.sleep(1000);
 
                 } else if (tbAux.getModel().getValueAt(o, 1).toString().isBlank() == true) {
-                    Thread.sleep(2000);
+                    Thread.sleep(1000);
                     driver.findElement(By.cssSelector(confMensagemPath)).click();
-                    Thread.sleep(Integer.parseInt(confSleepMensagens));
+                    Thread.sleep(500);
                     act.sendKeys(".").perform();
                     Thread.sleep(Integer.parseInt(confSleepMensagens));
                     js.executeScript(confMensagemPathHTLM + tbAux.getModel().getValueAt(o, 0).toString() + "';");
@@ -725,18 +769,22 @@ public class TelaDisparo extends javax.swing.JFrame {
             ultimoEnvio();
 
         } catch (org.openqa.selenium.remote.UnreachableBrowserException e) {
-            
-        }catch (org.openqa.selenium.ElementNotInteractableException e) {
+            System.out.println("MensagemDisparo: " + e);
+
+        } catch (org.openqa.selenium.ElementNotInteractableException e) {
             if (tbAux.getModel().getValueAt(contagemMensagem, 1).toString().isBlank() == false) {
-                   driver.findElement(By.cssSelector(confBotaoFecharPath)).click();
-                } else if (tbAux.getModel().getValueAt(contagemMensagem, 1).toString().isBlank() == true) {
-                    JOptionPane.showMessageDialog(null, "Mensagem Escrita Erro:" + e);
-                }
-            
+                driver.findElement(By.cssSelector(confBotaoFecharPath)).click();
+            } else if (tbAux.getModel().getValueAt(contagemMensagem, 1).toString().isBlank() == true) {
+                JOptionPane.showMessageDialog(null, "Mensagem Escrita Erro:" + e);
+            }
+            System.out.println("MensagemDisparo: " + e);
+
         } catch (org.openqa.selenium.WebDriverException e) {
-            
+            System.out.println("MensagemDisparo: " + e);
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Mensagem Erro:" + e);
+            System.out.println("MensagemDisparo: " + e);
             Limpar();
         }
     }
@@ -766,11 +814,13 @@ public class TelaDisparo extends javax.swing.JFrame {
                 pst.executeUpdate();
             }
         } catch (org.openqa.selenium.remote.UnreachableBrowserException e) {
-            
+            System.out.println("ultimoEnvio: " + e);
+
         } catch (org.openqa.selenium.WebDriverException e) {
-            
+            System.out.println("ultimoEnvio: " + e);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "UltimoEnvio error: " + e);
+            System.out.println("ultimoEnvio: " + e);
 
         }
     }

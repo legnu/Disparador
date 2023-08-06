@@ -167,10 +167,10 @@ public class TelaConfiguracao extends javax.swing.JFrame {
         txtPesquisaHTML.setText("document.getElementsByClassName(\"selectable-text copyable-text\")[1].firstChild.data = '");
         txtProfile.setText("");
         txtScroll.setText("document.querySelector('[id=\"pane-side\"]').scroll(0,");
-        txtSleepInicio.setText("180000");
-        txtVelocidadeInicioScroll.setText("500");
+        txtSleepInicio.setText("300000");
+        txtVelocidadeInicioScroll.setText("150");
         txtFecharPath.setText("span[data-icon='x']");
-        txtSleepMensagens.setText("1800");
+        txtSleepMensagens.setText("3000");
     }
 
      
@@ -630,12 +630,12 @@ public class TelaConfiguracao extends javax.swing.JFrame {
 
         buttonGroup1.add(jRadioButton1);
         jRadioButton1.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        jRadioButton1.setSelected(true);
         jRadioButton1.setText("Chrome");
         jRadioButton1.setEnabled(false);
 
         buttonGroup1.add(jRadioButton2);
         jRadioButton2.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+        jRadioButton2.setSelected(true);
         jRadioButton2.setText("Firefox");
         jRadioButton2.setEnabled(false);
 
