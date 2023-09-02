@@ -117,6 +117,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         }
     }
+    
 
     private void setIcon() {
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/br/com/LeGnus_Disparador/util/ERPGestao64.png")));
@@ -135,12 +136,12 @@ public class TelaPrincipal extends javax.swing.JFrame {
         tbAuxilio = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
-        btnGrupos = new javax.swing.JButton();
-        btnClientes = new javax.swing.JButton();
-        btnDisparar = new javax.swing.JButton();
-        btnMensagem = new javax.swing.JButton();
-        btnOcorrencias = new javax.swing.JButton();
-        btnConfiguracao = new javax.swing.JButton();
+        btnCadMensagens = new br.com.LeGnus_Disparador.Swing.botaoArredondado();
+        btnConfig = new br.com.LeGnus_Disparador.Swing.botaoArredondado();
+        btnOcorrencias = new br.com.LeGnus_Disparador.Swing.botaoArredondado();
+        btnDisparador = new br.com.LeGnus_Disparador.Swing.botaoArredondado();
+        btnCadGrupos = new br.com.LeGnus_Disparador.Swing.botaoArredondado();
+        btnCadClientes = new br.com.LeGnus_Disparador.Swing.botaoArredondado();
 
         tbAuxilio.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -163,72 +164,60 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 formWindowOpened(evt);
             }
         });
-        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel1.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel1.setBackground(java.awt.SystemColor.control);
+        jPanel1.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED), javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(204, 204, 204))));
 
         jButton1.setBackground(new java.awt.Color(204, 204, 204));
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/LeGnus_Disparador/util/LogoNova 450X193.png"))); // NOI18N
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/LeGnus_Disparador/util/Logo 450p.png"))); // NOI18N
         jButton1.setBorderPainted(false);
         jButton1.setContentAreaFilled(false);
 
-        btnGrupos.setBackground(new java.awt.Color(102, 102, 102));
-        btnGrupos.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
-        btnGrupos.setForeground(new java.awt.Color(255, 255, 255));
-        btnGrupos.setText("Cadastrar Grupos");
-        btnGrupos.addActionListener(new java.awt.event.ActionListener() {
+        btnCadMensagens.setText("Cadastrar Mensagens");
+        btnCadMensagens.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        btnCadMensagens.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnGruposActionPerformed(evt);
+                btnCadMensagensActionPerformed(evt);
             }
         });
 
-        btnClientes.setBackground(new java.awt.Color(102, 102, 102));
-        btnClientes.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
-        btnClientes.setForeground(new java.awt.Color(255, 255, 255));
-        btnClientes.setText("Cadastrar Clientes");
-        btnClientes.addActionListener(new java.awt.event.ActionListener() {
+        btnConfig.setText("Configuração");
+        btnConfig.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        btnConfig.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnClientesActionPerformed(evt);
+                btnConfigActionPerformed(evt);
             }
         });
 
-        btnDisparar.setBackground(new java.awt.Color(102, 102, 102));
-        btnDisparar.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
-        btnDisparar.setForeground(new java.awt.Color(255, 255, 255));
-        btnDisparar.setText("Disparador");
-        btnDisparar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDispararActionPerformed(evt);
-            }
-        });
-
-        btnMensagem.setBackground(new java.awt.Color(102, 102, 102));
-        btnMensagem.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
-        btnMensagem.setForeground(new java.awt.Color(255, 255, 255));
-        btnMensagem.setText("Cadastrar Mensagens");
-        btnMensagem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnMensagemActionPerformed(evt);
-            }
-        });
-
-        btnOcorrencias.setBackground(new java.awt.Color(102, 102, 102));
-        btnOcorrencias.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
-        btnOcorrencias.setForeground(new java.awt.Color(255, 255, 255));
         btnOcorrencias.setText("Ocorrencias");
+        btnOcorrencias.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         btnOcorrencias.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnOcorrenciasActionPerformed(evt);
             }
         });
 
-        btnConfiguracao.setBackground(new java.awt.Color(102, 102, 102));
-        btnConfiguracao.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
-        btnConfiguracao.setForeground(new java.awt.Color(255, 255, 255));
-        btnConfiguracao.setText("Configuração");
-        btnConfiguracao.addActionListener(new java.awt.event.ActionListener() {
+        btnDisparador.setText("Disparador");
+        btnDisparador.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        btnDisparador.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnConfiguracaoActionPerformed(evt);
+                btnDisparadorActionPerformed(evt);
+            }
+        });
+
+        btnCadGrupos.setText("Cadastrar Grupos");
+        btnCadGrupos.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        btnCadGrupos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCadGruposActionPerformed(evt);
+            }
+        });
+
+        btnCadClientes.setText("Cadastrar Clientes");
+        btnCadClientes.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        btnCadClientes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCadClientesActionPerformed(evt);
             }
         });
 
@@ -240,19 +229,19 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(99, 99, 99)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnClientes, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnMensagem, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnGrupos, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(btnCadClientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnCadGrupos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnCadMensagens, javax.swing.GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnDisparar, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnOcorrencias, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnConfiguracao, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btnDisparador, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnOcorrencias, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnConfig, javax.swing.GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(28, 28, 28)
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 756, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addContainerGap(12, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -260,60 +249,69 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnClientes, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnDisparar, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnCadClientes, javax.swing.GroupLayout.DEFAULT_SIZE, 55, Short.MAX_VALUE)
+                    .addComponent(btnDisparador, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(21, 21, 21)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnGrupos, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnOcorrencias, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnCadGrupos, javax.swing.GroupLayout.DEFAULT_SIZE, 55, Short.MAX_VALUE)
+                    .addComponent(btnOcorrencias, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnMensagem, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnConfiguracao, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(74, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnCadMensagens, javax.swing.GroupLayout.DEFAULT_SIZE, 55, Short.MAX_VALUE)
+                    .addComponent(btnConfig, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(69, Short.MAX_VALUE))
         );
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, 600));
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClientesActionPerformed
-        // TODO add your handling code here:
-        telaClientes();
-    }//GEN-LAST:event_btnClientesActionPerformed
-
-    private void btnGruposActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGruposActionPerformed
-        // TODO add your handling code here:
-        telaGrupos();
-    }//GEN-LAST:event_btnGruposActionPerformed
-
-    private void btnDispararActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDispararActionPerformed
-        // TODO add your handling code here:
-        telaDisparador();
-    }//GEN-LAST:event_btnDispararActionPerformed
-
-    private void btnMensagemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMensagemActionPerformed
-        // TODO add your handling code here:
-        telaMensagens();
-    }//GEN-LAST:event_btnMensagemActionPerformed
-
-    private void btnOcorrenciasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOcorrenciasActionPerformed
-        // TODO add your handling code here:
-        telaOcorrencias();
-    }//GEN-LAST:event_btnOcorrenciasActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         // TODO add your handling code here:
         envio();
     }//GEN-LAST:event_formWindowOpened
 
-    private void btnConfiguracaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfiguracaoActionPerformed
+    private void btnCadClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadClientesActionPerformed
+        // TODO add your handling code here:
+        telaClientes();
+    }//GEN-LAST:event_btnCadClientesActionPerformed
+
+    private void btnDisparadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDisparadorActionPerformed
+        // TODO add your handling code here:
+        telaDisparador();
+    }//GEN-LAST:event_btnDisparadorActionPerformed
+
+    private void btnCadGruposActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadGruposActionPerformed
+        // TODO add your handling code here:
+        telaGrupos();
+    }//GEN-LAST:event_btnCadGruposActionPerformed
+
+    private void btnOcorrenciasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOcorrenciasActionPerformed
+        // TODO add your handling code here:
+        telaOcorrencias();
+    }//GEN-LAST:event_btnOcorrenciasActionPerformed
+
+    private void btnCadMensagensActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadMensagensActionPerformed
+        // TODO add your handling code here:
+        telaMensagens();
+    }//GEN-LAST:event_btnCadMensagensActionPerformed
+
+    private void btnConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfigActionPerformed
         // TODO add your handling code here:
         telaConfiguraçao();
-    }//GEN-LAST:event_btnConfiguracaoActionPerformed
+    }//GEN-LAST:event_btnConfigActionPerformed
 
     /**
      * @param args the command line arguments
@@ -351,12 +349,12 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnClientes;
-    private javax.swing.JButton btnConfiguracao;
-    private javax.swing.JButton btnDisparar;
-    private javax.swing.JButton btnGrupos;
-    private javax.swing.JButton btnMensagem;
-    private javax.swing.JButton btnOcorrencias;
+    private br.com.LeGnus_Disparador.Swing.botaoArredondado btnCadClientes;
+    private br.com.LeGnus_Disparador.Swing.botaoArredondado btnCadGrupos;
+    private br.com.LeGnus_Disparador.Swing.botaoArredondado btnCadMensagens;
+    private br.com.LeGnus_Disparador.Swing.botaoArredondado btnConfig;
+    private br.com.LeGnus_Disparador.Swing.botaoArredondado btnDisparador;
+    private br.com.LeGnus_Disparador.Swing.botaoArredondado btnOcorrencias;
     private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
