@@ -119,7 +119,7 @@ public class TelaVale extends javax.swing.JFrame {
                 principal.setVisible(true);
                 this.dispose();
             } else {
-                JOptionPane.showMessageDialog(null, "Senha Invalida, Entre em contato com o nosso suporte...");
+                JOptionPane.showMessageDialog(null, "Senha Inválida \nEntre em contato com o nosso suporte... \n+55 31 98235-2599");
                 txtSenha.setText(null);
             }
 

@@ -25,7 +25,30 @@ Midia_Send text,
 Mensagem_Path text,
 Mensagem_HTML_Path text,
 BotaoFecharPath text,
-SleepMensagens text
+SleepMensagens text,
+Modo text
+);
+
+create table tbconfigFacebook(
+idconf MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
+Driver text,
+Exe text,
+Prof text,
+Sleep_Inicio text,
+Velocidade_Inicio text,
+Scroll text,
+Caixa_Pesquisa text,
+Caixa_Pesquisa_HTML text,
+Midia_Click text,
+Midia_Send_File text,
+Midia_Mensagem text,
+Midia_Mensagem_HTML text,
+Midia_Send text,
+Mensagem_Path text,
+Mensagem_HTML_Path text,
+BotaoFecharPath text,
+SleepMensagens text,
+Modo text
 );
 
 create table tbgrupos(
@@ -50,7 +73,8 @@ idmensagem MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
 mensagem text,
 titulo varchar(50),
 midia text,
-ordem int
+ordem int,
+arquivo text
 );
 
 create table tbErro(
@@ -60,20 +84,30 @@ nomeEsperado text,
 categoria text
 );
 
+create table tbProfiles(
+id MEDIUMINT NOT NULL AUTO_INCREMENT Primary key,
+nome text,
+profilePath text
+);
+
 insert into tbvale(idsenha,senha) values(1,"vazio");
 
 alter table tbclientes add email text;
+alter table tbmensagens add arquivo text;
 alter table tbclientes add diferenciador text;
 alter table tbgrupos add ultimoEnvioG date;
 alter table tbclientes add ultimoEnvioC date;
-alter table tbmensagens add ordem int;
+alter table tbconfig add Modo text;
+
+alter table tbclientes add email text;
 
 describe tbvale;
 
-select * from tbVale;
+select * from tbvale;
 select * from tbErro;
 select * from tbclientes;
 select * from tbgrupos;
 select * from tbconfig;
+select * from tbconfigFacebook; 	
 select * from tbmensagens;
 

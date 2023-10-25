@@ -34,31 +34,54 @@ public class TelaConfiguracao extends javax.swing.JFrame {
     }
 
     private void instaciarConfig() {
-
         try {
+            if (rbWhatsapp.isSelected() == true) {
+                String sql = "select * from tbconfig";
+                pst = conexao.prepareStatement(sql);
+                rs = pst.executeQuery();
+                tbAux.setModel(DbUtils.resultSetToTableModel(rs));
 
-            String sql = "select * from tbconfig";
-            pst = conexao.prepareStatement(sql);
-            rs = pst.executeQuery();
-            tbAux.setModel(DbUtils.resultSetToTableModel(rs));
+                txtDriver.setText(tbAux.getModel().getValueAt(0, 1).toString());
+                txtExe.setText(tbAux.getModel().getValueAt(0, 2).toString());
+                txtSleepInicio.setText(tbAux.getModel().getValueAt(0, 4).toString());
+                txtVelocidadeInicioScroll.setText(tbAux.getModel().getValueAt(0, 5).toString());
+                txtScroll.setText(tbAux.getModel().getValueAt(0, 6).toString());
+                txtPesquisa.setText(tbAux.getModel().getValueAt(0, 7).toString());
+                txtPesquisaHTML.setText(tbAux.getModel().getValueAt(0, 8).toString());
+                txtMidiaClick.setText(tbAux.getModel().getValueAt(0, 9).toString());
+                txtMidiaSendFile.setText(tbAux.getModel().getValueAt(0, 10).toString());
+                txtMidiaMensagem.setText(tbAux.getModel().getValueAt(0, 11).toString());
+                txtMidiaMensagemHTML.setText(tbAux.getModel().getValueAt(0, 12).toString());
+                txtMidiaSend.setText(tbAux.getModel().getValueAt(0, 13).toString());
+                txtMensagem.setText(tbAux.getModel().getValueAt(0, 14).toString());
+                txtMensagemHTML.setText(tbAux.getModel().getValueAt(0, 15).toString());
+                txtFecharPath.setText(tbAux.getModel().getValueAt(0, 16).toString());
+                txtSleepMensagens.setText(tbAux.getModel().getValueAt(0, 17).toString());
+                JOptionPane.showMessageDialog(null, "Pré_Configurações Whatsapp");
+            } else if (rbFacebook.isSelected() == true) {
+                String sql = "select * from tbconfigFacebook";
+                pst = conexao.prepareStatement(sql);
+                rs = pst.executeQuery();
+                tbAux.setModel(DbUtils.resultSetToTableModel(rs));
 
-            txtDriver.setText(tbAux.getModel().getValueAt(0, 1).toString());
-            txtExe.setText(tbAux.getModel().getValueAt(0, 2).toString());
-            txtProfile.setText(tbAux.getModel().getValueAt(0, 3).toString());
-            txtSleepInicio.setText(tbAux.getModel().getValueAt(0, 4).toString());
-            txtVelocidadeInicioScroll.setText(tbAux.getModel().getValueAt(0, 5).toString());
-            txtScroll.setText(tbAux.getModel().getValueAt(0, 6).toString());
-            txtPesquisa.setText(tbAux.getModel().getValueAt(0, 7).toString());
-            txtPesquisaHTML.setText(tbAux.getModel().getValueAt(0, 8).toString());
-            txtMidiaClick.setText(tbAux.getModel().getValueAt(0, 9).toString());
-            txtMidiaSendFile.setText(tbAux.getModel().getValueAt(0, 10).toString());
-            txtMidiaMensagem.setText(tbAux.getModel().getValueAt(0, 11).toString());
-            txtMidiaMensagemHTML.setText(tbAux.getModel().getValueAt(0, 12).toString());
-            txtMidiaSend.setText(tbAux.getModel().getValueAt(0, 13).toString());
-            txtMensagem.setText(tbAux.getModel().getValueAt(0, 14).toString());
-            txtMensagemHTML.setText(tbAux.getModel().getValueAt(0, 15).toString());
-            txtFecharPath.setText(tbAux.getModel().getValueAt(0, 16).toString());
-            txtSleepMensagens.setText(tbAux.getModel().getValueAt(0, 17).toString());
+                txtDriver.setText(tbAux.getModel().getValueAt(0, 1).toString());
+                txtExe.setText(tbAux.getModel().getValueAt(0, 2).toString());
+                txtSleepInicio.setText(tbAux.getModel().getValueAt(0, 4).toString());
+                txtVelocidadeInicioScroll.setText(tbAux.getModel().getValueAt(0, 5).toString());
+                txtScroll.setText(tbAux.getModel().getValueAt(0, 6).toString());
+                txtPesquisa.setText(tbAux.getModel().getValueAt(0, 7).toString());
+                txtPesquisaHTML.setText(tbAux.getModel().getValueAt(0, 8).toString());
+                txtMidiaClick.setText(tbAux.getModel().getValueAt(0, 9).toString());
+                txtMidiaSendFile.setText(tbAux.getModel().getValueAt(0, 10).toString());
+                txtMidiaMensagem.setText(tbAux.getModel().getValueAt(0, 11).toString());
+                txtMidiaMensagemHTML.setText(tbAux.getModel().getValueAt(0, 12).toString());
+                txtMidiaSend.setText(tbAux.getModel().getValueAt(0, 13).toString());
+                txtMensagem.setText(tbAux.getModel().getValueAt(0, 14).toString());
+                txtMensagemHTML.setText(tbAux.getModel().getValueAt(0, 15).toString());
+                txtFecharPath.setText(tbAux.getModel().getValueAt(0, 16).toString());
+                txtSleepMensagens.setText(tbAux.getModel().getValueAt(0, 17).toString());
+                JOptionPane.showMessageDialog(null, "Pré_Configurações Facebook");
+            }
 
         } catch (java.lang.NullPointerException e) {
             setDefault();
@@ -78,9 +101,15 @@ public class TelaConfiguracao extends javax.swing.JFrame {
 
     private void adcionarID() {
         try {
+            if(rbWhatsapp.isSelected() == true){
             String sql = "insert into tbconfig(idconf) values(1);";
             pst = conexao.prepareStatement(sql);
             pst.executeUpdate();
+            }else if(rbFacebook.isSelected() == true){
+            String sql = "insert into tbconfigFacebook(idconf) values(1);";
+            pst = conexao.prepareStatement(sql);
+            pst.executeUpdate();    
+            }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Adcionar: " + e);
 
@@ -124,28 +153,61 @@ public class TelaConfiguracao extends javax.swing.JFrame {
 
     private void salvarConfiguração() {
         try {
-            String sql = "update tbconfig set Driver=?,Exe=?,Prof=?,Sleep_Inicio=?,Velocidade_Inicio=?,Scroll=?,Caixa_Pesquisa=?,Caixa_Pesquisa_HTML=?,Midia_Click=?,Midia_Send_File=?,Midia_Mensagem=?,Midia_Mensagem_HTML=?,Midia_Send=?,Mensagem_Path=?,Mensagem_HTML_Path=?,BotaoFecharPath=?,SleepMensagens=? where idconf=1";
+            if (rbWhatsapp.isSelected() == true) {
+                int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja salvar essas configurações para o Whatsapp?", "Atenção", JOptionPane.YES_NO_OPTION);
 
-            pst = conexao.prepareStatement(sql);
-            pst.setString(1, txtDriver.getText());
-            pst.setString(2, txtExe.getText());
-            pst.setString(3, txtProfile.getText());
-            pst.setString(4, txtSleepInicio.getText());
-            pst.setString(5, txtVelocidadeInicioScroll.getText());
-            pst.setString(6, txtScroll.getText());
-            pst.setString(7, txtPesquisa.getText());
-            pst.setString(8, txtPesquisaHTML.getText());
-            pst.setString(9, txtMidiaClick.getText());
-            pst.setString(10, txtMidiaSendFile.getText());
-            pst.setString(11, txtMidiaMensagem.getText());
-            pst.setString(12, txtMidiaMensagemHTML.getText());
-            pst.setString(13, txtMidiaSend.getText());
-            pst.setString(14, txtMensagem.getText());
-            pst.setString(15, txtMensagemHTML.getText());
-            pst.setString(16, txtFecharPath.getText());
-            pst.setString(17, txtSleepMensagens.getText());
-            pst.executeUpdate();
+                if (confirma == JOptionPane.YES_OPTION) {
+                    String sql = "update tbconfig set Driver=?,Exe=?,Sleep_Inicio=?,Velocidade_Inicio=?,Scroll=?,Caixa_Pesquisa=?,Caixa_Pesquisa_HTML=?,Midia_Click=?,Midia_Send_File=?,Midia_Mensagem=?,Midia_Mensagem_HTML=?,Midia_Send=?,Mensagem_Path=?,Mensagem_HTML_Path=?,BotaoFecharPath=?,SleepMensagens=? where idconf=1";
 
+                    pst = conexao.prepareStatement(sql);
+                    pst.setString(1, txtDriver.getText());
+                    pst.setString(2, txtExe.getText());
+                    pst.setString(3, txtSleepInicio.getText());
+                    pst.setString(4, txtVelocidadeInicioScroll.getText());
+                    pst.setString(5, txtScroll.getText());
+                    pst.setString(6, txtPesquisa.getText());
+                    pst.setString(7, txtPesquisaHTML.getText());
+                    pst.setString(8, txtMidiaClick.getText());
+                    pst.setString(9, txtMidiaSendFile.getText());
+                    pst.setString(10, txtMidiaMensagem.getText());
+                    pst.setString(11, txtMidiaMensagemHTML.getText());
+                    pst.setString(12, txtMidiaSend.getText());
+                    pst.setString(13, txtMensagem.getText());
+                    pst.setString(14, txtMensagemHTML.getText());
+                    pst.setString(15, txtFecharPath.getText());
+                    pst.setString(16, txtSleepMensagens.getText());
+                    pst.executeUpdate();
+
+                    JOptionPane.showMessageDialog(null, "Configuração Aplicada com Sucesso.");
+                }
+            } else if (rbFacebook.isSelected() == true) {
+                int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja salvar essas configurações para o Facebook?", "Atenção", JOptionPane.YES_NO_OPTION);
+
+                if (confirma == JOptionPane.YES_OPTION) {
+                String sql = "update tbconfigFacebook set Driver=?,Exe=?,Sleep_Inicio=?,Velocidade_Inicio=?,Scroll=?,Caixa_Pesquisa=?,Caixa_Pesquisa_HTML=?,Midia_Click=?,Midia_Send_File=?,Midia_Mensagem=?,Midia_Mensagem_HTML=?,Midia_Send=?,Mensagem_Path=?,Mensagem_HTML_Path=?,BotaoFecharPath=?,SleepMensagens=? where idconf=1";
+
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, txtDriver.getText());
+                pst.setString(2, txtExe.getText());
+                pst.setString(3, txtSleepInicio.getText());
+                pst.setString(4, txtVelocidadeInicioScroll.getText());
+                pst.setString(5, txtScroll.getText());
+                pst.setString(6, txtPesquisa.getText());
+                pst.setString(7, txtPesquisaHTML.getText());
+                pst.setString(8, txtMidiaClick.getText());
+                pst.setString(9, txtMidiaSendFile.getText());
+                pst.setString(10, txtMidiaMensagem.getText());
+                pst.setString(11, txtMidiaMensagemHTML.getText());
+                pst.setString(12, txtMidiaSend.getText());
+                pst.setString(13, txtMensagem.getText());
+                pst.setString(14, txtMensagemHTML.getText());
+                pst.setString(15, txtFecharPath.getText());
+                pst.setString(16, txtSleepMensagens.getText());
+                pst.executeUpdate();
+
+                JOptionPane.showMessageDialog(null, "Configuração Aplicada com Sucesso.");
+                }
+            }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Salvar" + e);
 
@@ -154,27 +216,39 @@ public class TelaConfiguracao extends javax.swing.JFrame {
     }
 
     private void setDefault() {
-        txtDriver.setText("");
-        txtExe.setText("");
-        txtMensagem.setText("div[title='Mensagem']");
-        txtMensagemHTML.setText("document.getElementsByClassName(\"selectable-text copyable-text\")[parseInt(document.getElementsByClassName(\"selectable-text copyable-text\").length) - 1].firstChild.data = '");
-        txtMidiaClick.setText("span[data-icon='clip']");
-        txtMidiaMensagem.setText("div[title='Mensagem']");
-        txtMidiaMensagemHTML.setText("document.getElementsByClassName(\"selectable-text copyable-text\")[1].firstChild.data = '");
-        txtMidiaSend.setText("span[data-icon='send']");
-        txtMidiaSendFile.setText("input[type='file']");
-        txtPesquisa.setText("div[title='Caixa de texto de pesquisa']");
-        txtPesquisaHTML.setText("document.getElementsByClassName(\"selectable-text copyable-text\")[1].firstChild.data = '");
-        txtProfile.setText("");
-        txtScroll.setText("document.querySelector('[id=\"pane-side\"]').scroll(0,");
-        txtSleepInicio.setText("300000");
-        txtVelocidadeInicioScroll.setText("150");
-        txtFecharPath.setText("span[data-icon='x']");
-        txtSleepMensagens.setText("3000");
+        if (rbWhatsapp.isSelected() == true) {
+            txtMensagem.setText("div[title='Digite uma mensagem']");
+            txtMensagemHTML.setText("document.querySelector('[title=\"Digite uma mensagem\"]').children[0].children[0].firstChild.data = '");
+            txtMidiaClick.setText("div[aria-label='Anexar']");
+            txtMidiaMensagem.setText("div[title='Digite uma mensagem']");
+            txtMidiaMensagemHTML.setText("document.querySelector('[title=\"Digite uma mensagem\"]').children[0].children[0].firstChild.data = '");
+            txtMidiaSend.setText("span[data-icon='send']");
+            txtMidiaSendFile.setText("input[accept='image/*,video/mp4,video/3gpp,video/quicktime']");
+            txtPesquisa.setText("div[title='Caixa de texto de pesquisa']");
+            txtPesquisaHTML.setText("document.querySelector('[title=\"Caixa de texto de pesquisa\"]').children[0].children[0].firstChild.data = '");
+            txtScroll.setText("document.querySelector('[id=\"pane-side\"]').scroll(0,");
+            txtSleepInicio.setText("300000");
+            txtVelocidadeInicioScroll.setText("150");
+            txtFecharPath.setText("span[data-icon='x']");
+            txtSleepMensagens.setText("3000");
+        } else if (rbFacebook.isSelected() == true) {
+            txtMensagem.setText("div[aria-label='Mensagem']");
+            txtMensagemHTML.setText("document.querySelectorAll(\"div[aria-label='Mensagem']\")[0].firstChild.firstChild.firstChild.data = '");
+            txtMidiaClick.setText("document.querySelector(\"div[data-pagelet='GroupInlineComposer']\").firstChild.firstChild.firstChild.children[1].firstChild.children[1].click()");
+            txtMidiaMensagem.setText("div[aria-label='Crie uma publicação aberta…']");
+            txtMidiaMensagemHTML.setText("document.querySelector(\"div[aria-label='Crie uma publicação aberta…']\").firstChild.firstChild.firstChild.firstChild.firstChild.firstChild.data='");
+            txtMidiaSend.setText("div[aria-label='Publicar']");
+            txtMidiaSendFile.setText("input[accept=\"image/*,image/heif,image/heic,video/*,video/mp4,video/x-m4v,video/x-matroska,.mkv\"]");
+            txtPesquisa.setText("input[aria-label='Pesquisar no Facebook']");
+            txtPesquisaHTML.setText("input[aria-label='Pesquisar no Messenger']");
+            txtScroll.setText("input[type='file']");
+            txtSleepInicio.setText("300000");
+            txtVelocidadeInicioScroll.setText("");
+            txtFecharPath.setText("");
+            txtSleepMensagens.setText("3000");
+        }
     }
 
-     
-     
     private void setIcon() {
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/br/com/LeGnus_Disparador/util/ERPGestao64.png")));
     }
@@ -195,8 +269,6 @@ public class TelaConfiguracao extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         txtDriver = new javax.swing.JTextField();
         btnDriver = new javax.swing.JButton();
-        jPanel5 = new javax.swing.JPanel();
-        txtProfile = new javax.swing.JTextField();
         jPanel6 = new javax.swing.JPanel();
         txtExe = new javax.swing.JTextField();
         btnExe = new javax.swing.JButton();
@@ -230,6 +302,11 @@ public class TelaConfiguracao extends javax.swing.JFrame {
         txtSleepMensagens = new javax.swing.JTextField();
         botaoArredondado1 = new br.com.LeGnus_Disparador.Swing.botaoArredondado();
         botaoArredondado2 = new br.com.LeGnus_Disparador.Swing.botaoArredondado();
+        jPanel3 = new javax.swing.JPanel();
+        jButton2 = new javax.swing.JButton();
+        rbFacebook = new javax.swing.JRadioButton();
+        rbWhatsapp = new javax.swing.JRadioButton();
+        jButton1 = new javax.swing.JButton();
 
         tbAux.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -259,7 +336,7 @@ public class TelaConfiguracao extends javax.swing.JFrame {
         jPanel1.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED), javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(204, 204, 204))));
 
         jPanel2.setBackground(java.awt.SystemColor.control);
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Chrome Driver / Gecko Driver", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Gecko Driver", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
         jPanel2.setPreferredSize(new java.awt.Dimension(260, 60));
 
         btnDriver.setText("Buscar");
@@ -274,7 +351,7 @@ public class TelaConfiguracao extends javax.swing.JFrame {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(txtDriver, javax.swing.GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)
+                .addComponent(txtDriver, javax.swing.GroupLayout.DEFAULT_SIZE, 258, Short.MAX_VALUE)
                 .addGap(24, 24, 24)
                 .addComponent(btnDriver)
                 .addContainerGap())
@@ -288,23 +365,8 @@ public class TelaConfiguracao extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        jPanel5.setBackground(java.awt.SystemColor.control);
-        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Profile Path", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
-        jPanel5.setPreferredSize(new java.awt.Dimension(260, 60));
-
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(txtProfile, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
-        );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(txtProfile, javax.swing.GroupLayout.Alignment.TRAILING)
-        );
-
         jPanel6.setBackground(java.awt.SystemColor.control);
-        jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Chrome.exe / Firefox.exe", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
+        jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Firefox.exe", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
         jPanel6.setPreferredSize(new java.awt.Dimension(260, 60));
 
         btnExe.setText("Buscar");
@@ -319,7 +381,7 @@ public class TelaConfiguracao extends javax.swing.JFrame {
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addComponent(txtExe, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
+                .addComponent(txtExe)
                 .addGap(24, 24, 24)
                 .addComponent(btnExe)
                 .addContainerGap())
@@ -398,7 +460,7 @@ public class TelaConfiguracao extends javax.swing.JFrame {
         jPanel13.setLayout(jPanel13Layout);
         jPanel13Layout.setHorizontalGroup(
             jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(txtPesquisa)
+            .addComponent(txtPesquisa, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE)
         );
         jPanel13Layout.setVerticalGroup(
             jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -430,7 +492,7 @@ public class TelaConfiguracao extends javax.swing.JFrame {
         jPanel15.setLayout(jPanel15Layout);
         jPanel15Layout.setHorizontalGroup(
             jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(txtMidiaClick)
+            .addComponent(txtMidiaClick, javax.swing.GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE)
         );
         jPanel15Layout.setVerticalGroup(
             jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -579,6 +641,65 @@ public class TelaConfiguracao extends javax.swing.JFrame {
             }
         });
 
+        jPanel3.setBackground(java.awt.SystemColor.control);
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Modo", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Arial", 1, 12))); // NOI18N
+
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/LeGnus_Disparador/util/facebook_icon_32x32-removebg-preview.png"))); // NOI18N
+        jButton2.setContentAreaFilled(false);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        buttonGroup1.add(rbFacebook);
+        rbFacebook.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbFacebookActionPerformed(evt);
+            }
+        });
+
+        buttonGroup1.add(rbWhatsapp);
+        rbWhatsapp.setSelected(true);
+        rbWhatsapp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbWhatsappActionPerformed(evt);
+            }
+        });
+
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/LeGnus_Disparador/util/watsapp_icon_32x32-removebg-preview.png"))); // NOI18N
+        jButton1.setContentAreaFilled(false);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addComponent(rbFacebook)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton2)
+                .addGap(16, 16, 16)
+                .addComponent(rbWhatsapp)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1)
+                .addGap(85, 85, 85))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addGap(10, 10, 10)
+                            .addComponent(rbWhatsapp))
+                        .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING))
+                    .addComponent(jButton2)
+                    .addComponent(rbFacebook))
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -588,13 +709,12 @@ public class TelaConfiguracao extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
-                            .addComponent(jPanel13, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
-                            .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
-                            .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
-                            .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
-                            .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE)
-                            .addComponent(jPanel28, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 269, Short.MAX_VALUE))
+                            .addComponent(jPanel13, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
+                            .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
+                            .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
+                            .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
+                            .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
+                            .addComponent(jPanel28, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jPanel15, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE)
@@ -602,17 +722,20 @@ public class TelaConfiguracao extends javax.swing.JFrame {
                             .addComponent(jPanel26, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE)
                             .addComponent(jPanel25, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE)
                             .addComponent(jPanel24, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE)
-                            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE)
                             .addComponent(jPanel27, javax.swing.GroupLayout.DEFAULT_SIZE, 245, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE)
-                            .addComponent(jPanel22, javax.swing.GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE)
-                            .addComponent(jPanel21, javax.swing.GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE)))
+                            .addComponent(jPanel22, javax.swing.GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE)
+                            .addComponent(jPanel21, javax.swing.GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE)
+                            .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(botaoArredondado1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(16, 16, 16)
-                        .addComponent(botaoArredondado2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(botaoArredondado2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 372, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE)))
                 .addGap(16, 16, 16))
         );
         jPanel1Layout.setVerticalGroup(
@@ -621,8 +744,7 @@ public class TelaConfiguracao extends javax.swing.JFrame {
                 .addGap(16, 16, 16)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(jPanel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE)
-                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE))
                 .addGap(16, 16, 16)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(jPanel15, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 46, Short.MAX_VALUE)
@@ -645,11 +767,13 @@ public class TelaConfiguracao extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel23, javax.swing.GroupLayout.DEFAULT_SIZE, 46, Short.MAX_VALUE)
                     .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, 46, Short.MAX_VALUE))
-                .addGap(16, 16, 16)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel27, javax.swing.GroupLayout.DEFAULT_SIZE, 46, Short.MAX_VALUE)
-                    .addComponent(jPanel28, javax.swing.GroupLayout.DEFAULT_SIZE, 46, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 94, Short.MAX_VALUE)
+                .addGap(0, 0, 0)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jPanel27, javax.swing.GroupLayout.DEFAULT_SIZE, 46, Short.MAX_VALUE)
+                        .addComponent(jPanel28, javax.swing.GroupLayout.DEFAULT_SIZE, 46, Short.MAX_VALUE))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 95, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(botaoArredondado2, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(botaoArredondado1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -710,6 +834,20 @@ public class TelaConfiguracao extends javax.swing.JFrame {
         setDefault();
     }//GEN-LAST:event_botaoArredondado2ActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void rbFacebookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbFacebookActionPerformed
+        // TODO add your handling code here:
+        instaciarConfig();
+    }//GEN-LAST:event_rbFacebookActionPerformed
+
+    private void rbWhatsappActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbWhatsappActionPerformed
+        // TODO add your handling code here:
+        instaciarConfig();
+    }//GEN-LAST:event_rbWhatsappActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -754,6 +892,8 @@ public class TelaConfiguracao extends javax.swing.JFrame {
     private javax.swing.JButton btnDriver;
     private javax.swing.JButton btnExe;
     private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel13;
@@ -768,11 +908,13 @@ public class TelaConfiguracao extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel26;
     private javax.swing.JPanel jPanel27;
     private javax.swing.JPanel jPanel28;
-    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JRadioButton rbFacebook;
+    private javax.swing.JRadioButton rbWhatsapp;
     private javax.swing.JTable tbAux;
     private javax.swing.JTextField txtDriver;
     private javax.swing.JTextField txtExe;
@@ -786,7 +928,6 @@ public class TelaConfiguracao extends javax.swing.JFrame {
     private javax.swing.JTextField txtMidiaSendFile;
     private javax.swing.JTextField txtPesquisa;
     private javax.swing.JTextField txtPesquisaHTML;
-    private javax.swing.JTextField txtProfile;
     private javax.swing.JTextField txtScroll;
     private javax.swing.JTextField txtSleepInicio;
     private javax.swing.JTextField txtSleepMensagens;

@@ -72,7 +72,11 @@ public class TelaClientes extends javax.swing.JFrame {
             pst.setString(1, txtNomeCliente.getText());
             pst.setString(2, txtTelefoneCliente.getText());
             pst.setString(3, txtCategoria.getText());
-            pst.setString(4, txtEmailCliente.getText());
+            if(txtEmailCliente.getText() == null){
+                pst.setString(4,"");
+            }else{
+                pst.setString(4, txtEmailCliente.getText());
+            }
             pst.setString(5, "");
             if (txtNomeCliente.getText().isEmpty() == true) {
                 JOptionPane.showMessageDialog(null, "Adicione um Nome para o Cliente.");
@@ -101,12 +105,19 @@ public class TelaClientes extends javax.swing.JFrame {
         
         txtNumeroCliente.setText(tbClientes.getModel().getValueAt(setar, 0).toString());
         txtNomeCliente.setText(tbClientes.getModel().getValueAt(setar, 1).toString());
-        txtTelefoneCliente.setText(tbClientes.getModel().getValueAt(setar, 2).toString());        
-        if(
-        tbClientes.getModel().getValueAt(setar, 3) == null){txtCategoria.setText("Nulo");}
-        else{
-        txtCategoria.setText(tbClientes.getModel().getValueAt(setar, 3).toString());}
-        txtEmailCliente.setText(tbClientes.getModel().getValueAt(setar, 4).toString());
+        txtTelefoneCliente.setText(tbClientes.getModel().getValueAt(setar, 2).toString());  
+        
+        if(tbClientes.getModel().getValueAt(setar, 3) == null){
+            txtCategoria.setText("Nulo");
+        }else{
+        txtCategoria.setText(tbClientes.getModel().getValueAt(setar, 3).toString());
+        }
+        
+        if(tbClientes.getModel().getValueAt(setar, 4) == null){
+                txtEmailCliente.setText("");
+        }else{
+                txtEmailCliente.setText(tbClientes.getModel().getValueAt(setar, 4).toString());
+        }
 
         btnAdicionar.setEnabled(false);
         btnEditar.setEnabled(true);
@@ -114,13 +125,17 @@ public class TelaClientes extends javax.swing.JFrame {
     }
 
     private void editarCliente() {
-        String sql = "update tbclientes set nomecliente=?,telefonecliente=?,conjuntocliente=? where idcliente=?";
+        String sql = "update tbclientes set nomecliente=?,telefonecliente=?,conjuntocliente=?,email=? where idcliente=?";
         try {
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtNomeCliente.getText());
             pst.setString(2, txtTelefoneCliente.getText());
             pst.setString(3, txtCategoria.getText());
-            pst.setString(4, txtEmailCliente.getText());
+            if(txtEmailCliente.getText() == null){
+                pst.setString(4,"");
+            }else{
+                pst.setString(4, txtEmailCliente.getText());
+            }
             pst.setString(5, txtNumeroCliente.getText());
             if (txtNomeCliente.getText().isEmpty() == true) {
                 JOptionPane.showMessageDialog(null, "Adicione um Nome para o Cliente.");

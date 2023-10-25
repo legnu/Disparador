@@ -30,7 +30,7 @@ public class TelaOcorrencia extends javax.swing.JFrame {
         conexao = ModuloConexao.conector();
         setIcon();
     }
-    
+
     private void instanciarTbOcorrencia() {
         String sql = "select idErro as ID, nomeInserido as Nome_Inserido, categoria as Tipo from tbErro";
         try {
@@ -43,53 +43,89 @@ public class TelaOcorrencia extends javax.swing.JFrame {
 
         }
     }
-    
-    private void remover(String nome, String tipo) {
-        int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover este Cliente?", "Atenção", JOptionPane.YES_NO_OPTION);
 
-        if (confirma == JOptionPane.YES_OPTION) {                
-            try {
-                String sql;
-                if(tipo.equals("Cliente")){
-                   sql = "delete from tbclientes where nomecliente=?";
-                }else {
-                   sql = "delete from tbgrupos where nomeGrupo=?";
-                }
-                
+    private void remover(String nome, String tipo) {
+        try {
+            String confirma = JOptionPane.showInputDialog(null, "Você deseja ?\n 1)Tirar este " + tipo + " da tela de ocorrencias.\n 2)Excluir " + tipo + " do banco de dados.", "Atenção", JOptionPane.YES_NO_OPTION);
+            String sql;
+            
+            if (confirma.equals("1") == true) {
+
+                sql = "delete from tbErro where nomeInserido=? and categoria=?";
                 pst = conexao.prepareStatement(sql);
                 pst.setString(1, nome);
+                pst.setString(2, tipo);
                 pst.executeUpdate();
-               
-                
-                sql = "delete from tbErro where nomeInserido=? and categoria=?";                
-                pst = conexao.prepareStatement(sql);
-                pst.setString(1, nome);
-                pst.setString(1, tipo);
-                pst.executeUpdate();
-                
+
                 instanciarTbOcorrencia();
+
+                JOptionPane.showMessageDialog(null, tipo + " removido da tela de ocorrencias com sucesso.");
+
+            } else if (confirma.equals("2") == true) {
                 
-                JOptionPane.showMessageDialog(null, tipo + " removido com sucesso");
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, e);
+                if (tipo.equals("Cliente")) {
+                    sql = "delete from tbclientes where nomecliente=?";
+                } else {
+                    sql = "delete from tbgrupos where nomeGrupo=?";
+                }
+
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, nome);
+                pst.executeUpdate();
+
+                sql = "delete from tbErro where nomeInserido=? and categoria=?";
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, nome);
+                pst.setString(2, tipo);
+                pst.executeUpdate();
+
+                instanciarTbOcorrencia();
+
+                JOptionPane.showMessageDialog(null, tipo + " removido do banco de dados com sucesso.");
+
+            }else{
+                JOptionPane.showMessageDialog(null, "Opção desconhecida!\nEscolha a alternativa 1 ou a alternativa 2.");
             }
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    private void removerTudo() {
+        try {
+            String sql;
+            String tipo;
+            String nome;
+            for (int i = 0; i < tbOcorrencia.getRowCount(); i++) {
+                tipo = tbOcorrencia.getModel().getValueAt(i, 2).toString();
+                nome = tbOcorrencia.getModel().getValueAt(i, 1).toString();
+                
+                if (tipo.equals("Cliente")) {
+                    sql = "delete from tbclientes where nomecliente=?";
+                } else {
+                    sql = "delete from tbgrupos where nomeGrupo=?";
+                }
+
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, nome);
+                pst.executeUpdate();
+
+                sql = "delete from tbErro where nomeInserido=? and categoria=?";
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, nome);
+                pst.setString(2, tipo);
+                pst.executeUpdate();
+            }
+            
+            instanciarTbOcorrencia();
+            
+            JOptionPane.showMessageDialog(null, "Removidos do banco de dados com sucesso.");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
         }
 
     }
-    
-     private void removerTudo() {          
-            try {
-                for(int i = 0; i < tbOcorrencia.getRowCount(); i++){
-                    remover(tbOcorrencia.getModel().getValueAt(i, 1).toString(),
-                            tbOcorrencia.getModel().getValueAt(i, 2).toString());
-                }
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, e);
-            }
-
-    }
-
-    
 
     private void limparHistorico() {
         try {

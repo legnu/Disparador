@@ -77,6 +77,7 @@ public class TelaDisparo extends javax.swing.JFrame {
     String confMensagemPathHTLM;
     String confBotaoFecharPath;
     String confSleepMensagens;
+    String confModo;
 
     /**
      * O conjunto de objetos abaixo são responsaves pelo funcionamento da tela.
@@ -85,45 +86,7 @@ public class TelaDisparo extends javax.swing.JFrame {
         initComponents();
         conexao = ModuloConexao.conector();
         setIcon();
-        Diferenciador();
-    }
-    
-    private void Diferenciador(){
-        try{
-            int cont;
-            pst = conexao.prepareStatement("select idcliente,nomecliente from tbclientes ORDER BY nomecliente ASC");
-            rs = pst.executeQuery();
-            tbAux.setModel(DbUtils.resultSetToTableModel(rs));
-            
-            JOptionPane.showMessageDialog(null, "Configurando");
-            
-            for(int i = 0; i < tbAux.getRowCount(); i++){
-                cont = 0;
-                
-                
-                for(int o = i+1; o < tbAux.getRowCount(); o++){
-                    if(tbAux.getModel().getValueAt(i, 1).toString().equals(tbAux.getModel().getValueAt(o, 1).toString())){
-                        cont++;
-                    }
-                }
-                    
-                if(cont == 0){
-
-                }else{
-                    pst = conexao.prepareStatement("update tbclientes set diferenciador = ? where idcliente = ?");
-                    pst.setInt(1, cont);
-                    pst.setString(2, tbAux.getModel().getValueAt(i, 0).toString());
-                    pst.executeUpdate();  
-                }
-                    
-            }          
-            
-            JOptionPane.showMessageDialog(null, "Pronto");
-            
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
-
-        }
+        InstanciarPerfil();
     }
 
     private void setIcon() {
@@ -148,6 +111,19 @@ public class TelaDisparo extends javax.swing.JFrame {
         Limitar();
         instanciarCategoria();
         instanciarTabela();
+    }
+    
+    private void InstanciarPerfil(){
+        try {
+            String sql = "select nome from tbProfiles";
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                cbProfile.addItem(rs.getString("nome"));
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }    
     }
 
     private void Limitar() {
@@ -338,6 +314,7 @@ public class TelaDisparo extends javax.swing.JFrame {
             confMensagemPathHTLM = tbConfig.getModel().getValueAt(0, 15).toString();
             confBotaoFecharPath = tbConfig.getModel().getValueAt(0, 16).toString();
             confSleepMensagens = tbConfig.getModel().getValueAt(0, 17).toString();
+            confModo = tbConfig.getModel().getValueAt(0, 18).toString();
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
@@ -517,55 +494,90 @@ public class TelaDisparo extends javax.swing.JFrame {
         instanciarTbConfig();
 
     }
+    
+    private void profilePath(){
+        try{
+            String sqy = "select profilePath from tbProfiles where nome = '" +  cbProfile.getSelectedItem().toString() + "'";
+            pst = conexao.prepareStatement(sqy);
+            rs = pst.executeQuery();
+            
+            tbAux.setModel(DbUtils.resultSetToTableModel(rs));
+            tbAux.setEnabled(true);            
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
 
     /**
      * O conjunto de objetos abaixo são responsaveis pelo disparo
      */
     private void disparar() {
         try {
-
             /**
              * Configuração do Navegador*
              */
             
-            
+            JOptionPane.showMessageDialog(null, "Clique no OK e Aguarde.");
+
             System.setProperty("webdriver.gecko.driver", confDriver);
             FirefoxOptions options = new FirefoxOptions();
             options.setBinary(confExe);
+            profilePath();
             
-            File firefoxProfileFolder = new File(confProf);
-            FirefoxProfile profile = new FirefoxProfile(firefoxProfileFolder); 
+            File firefoxProfileFolder = new File(tbAux.getModel().getValueAt(0, 0).toString());
+            FirefoxProfile profile = new FirefoxProfile(firefoxProfileFolder);
             profile.setAcceptUntrustedCertificates(true);
-            options.setProfile(profile);            
-            
+            options.setProfile(profile);
+
             /**
              * Configuração do Driver && Lista de Mensagens selecionadas*
              */
             montarMensagem();
             driver = new FirefoxDriver(options);
             act = new Actions(driver);
-            driver.get("https://web.whatsapp.com/");
-
-            /**
-             * Configuração do Driver && Lista de Mensagens selecionadas*
-             */
-            descerScroll();
-
-            if (forScroll >= 500000) {
+            aux = 0;
+            if (rbWhatsapp.isSelected() == true) {
+                driver.get("https://web.whatsapp.com/");
 
                 /**
-                 * Disparo*
+                 * Configuração do Driver && Lista de Mensagens selecionadas*
                  */
-                for (int i = 0; i < tbExibicao.getRowCount(); i++) {
+                descerScroll();
 
-                    Thread.sleep(1000);
-                    pesquisarNome();
-                    Thread.sleep(3000);
-                    mensagemDisparo();                    
+                if (forScroll >= 500000) {
 
-                    aux++;
+                    /**
+                     * Disparo*
+                     */
+                    for (int i = 0; i < tbExibicao.getRowCount(); i++) {
 
+                        Thread.sleep(1000);
+                        pesquisarNome();
+
+                        Thread.sleep(3000);
+                        existe();
+
+                        if (existe() == false) {
+                            listaNegra();
+                        } else {
+                            Thread.sleep(3000);
+                            mensagemDisparo();
+                        }
+
+                        aux++;
+
+                    }
                 }
+            } else if (rbFacebook.isSelected() == true) {
+                driver.get("https://www.google.com/");
+                Thread.sleep(Integer.parseInt(confSleepInicio));
+                for (int i = 0; i < tbExibicao.getRowCount(); i++) {
+                    pesquisarNomeFacebook();
+                    Thread.sleep(5000);
+                    mensagemDisparoFacebook();
+                    aux++;
+                }
+
             }
 
         } catch (org.openqa.selenium.remote.UnreachableBrowserException e) {
@@ -573,8 +585,8 @@ public class TelaDisparo extends javax.swing.JFrame {
 
         } catch (org.openqa.selenium.WebDriverException e) {
             JOptionPane.showMessageDialog(null, "Disparo error: " + e);
-            diferenciarFechamento();
-            
+            //diferenciarFechamento();
+
             System.out.println("Disparo: " + e);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Disparo error: " + e);
@@ -583,37 +595,28 @@ public class TelaDisparo extends javax.swing.JFrame {
         }
     }
 
-    private void diferenciarFechamento() {
+    public boolean existe() {
         try {
-            int o = JOptionPane.showConfirmDialog(null, "O disparo foi interrompido, você deseja continua-lo?");
-            if (o == 0) {
-                driver.quit();
-                disparar();
-            } else if (o == 1) {
-                driver.quit();
-            } else {
-                driver.quit();
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Decida error: " + e);
-            System.out.println("Decida: " + e);
-            Limpar();
+            driver.findElement(By.cssSelector("span[title='" + tbExibicao.getModel().getValueAt(aux, 1).toString() + "']"));
+            return true;
+        } catch (org.openqa.selenium.NoSuchElementException e) {
+            return false;
         }
     }
 
     private void descerScroll() {
         try {
             Thread.sleep(Integer.parseInt(confSleepInicio));
-            js = (JavascriptExecutor) driver;           
+            js = (JavascriptExecutor) driver;
 
             for (forScroll = 1; forScroll <= 400000; forScroll = forScroll + Integer.parseInt(confVelocidadeInicio)) {
                 js.executeScript(confScroll + forScroll + ");");
             }
-            
+
             for (forScroll = 400000; forScroll <= 0; forScroll = forScroll - Integer.parseInt(confVelocidadeInicio)) {
                 js.executeScript(confScroll + forScroll + ");");
             }
-            
+
             for (forScroll = 1; forScroll <= 500000; forScroll = forScroll + Integer.parseInt(confVelocidadeInicio)) {
                 js.executeScript(confScroll + forScroll + ");");
             }
@@ -670,7 +673,7 @@ public class TelaDisparo extends javax.swing.JFrame {
                 }
             }
 
-            String sqy = "select mensagem, midia from tbmensagens where " + listaMensagem + " ORDER BY ordem asc";
+            String sqy = "select mensagem, midia, arquivo from tbmensagens where " + listaMensagem + " ORDER BY ordem asc";
             pst = conexao.prepareStatement(sqy);
             rs = pst.executeQuery();
             tbAux.setModel(DbUtils.resultSetToTableModel(rs));
@@ -712,9 +715,9 @@ public class TelaDisparo extends javax.swing.JFrame {
             act.sendKeys(".").perform();
             Thread.sleep(Integer.parseInt(confSleepMensagens));
             js = (JavascriptExecutor) driver;
-            if(rbCliente.isSelected()){
-                js.executeScript(confCaixaPesquisaHTML + tbExibicao.getModel().getValueAt(aux, 1).toString() + tbExibicao.getModel().getValueAt(aux, 3).toString() + "';");
-            }else{
+            if (rbCliente.isSelected()) {
+                js.executeScript(confCaixaPesquisaHTML + tbExibicao.getModel().getValueAt(aux, 1).toString() + "';");
+            } else {
                 js.executeScript(confCaixaPesquisaHTML + tbExibicao.getModel().getValueAt(aux, 1).toString() + "';");
             }
 
@@ -730,20 +733,35 @@ public class TelaDisparo extends javax.swing.JFrame {
         }
     }
 
-    private void validarNome() {
+    private void pesquisarNomeFacebook() {
         try {
-            Thread.sleep(Integer.parseInt(confSleepMensagens));
-            Certificar = driver.findElement(By.cssSelector("span[title='" + tbExibicao.getModel().getValueAt(aux, 1).toString() + "']"));
-        } catch (org.openqa.selenium.remote.UnreachableBrowserException e) {
-
-        } catch (org.openqa.selenium.NoSuchElementException e) {
-            System.out.println("Validar Nome: " + e);
-            Certificar = null;
-        } catch (org.openqa.selenium.WebDriverException e) {
-            System.out.println("Validar Nome: " + e);
+            js = (JavascriptExecutor) driver;
+            if (rbCliente.isSelected()) {
+                driver.get("https://www.facebook.com/messages");
+                Thread.sleep(10000);
+                driver.findElement(By.cssSelector(confCaixaPesquisaHTML)).click();
+                Thread.sleep(Integer.parseInt(confSleepMensagens));
+                act.sendKeys(tbExibicao.getModel().getValueAt(aux, 1).toString()).perform();
+                Thread.sleep(1000);
+                act.sendKeys(Keys.ARROW_DOWN).perform();
+                Thread.sleep(500);
+                act.sendKeys(Keys.ARROW_DOWN).perform();
+                Thread.sleep(500);
+                act.sendKeys(Keys.ENTER).perform();
+            } else {
+                driver.get("https://www.facebook.com");
+                Thread.sleep(5000);
+                driver.findElement(By.cssSelector(confCaixaPesquisa)).click();
+                Thread.sleep(Integer.parseInt(confSleepMensagens));
+                act.sendKeys(tbExibicao.getModel().getValueAt(aux, 1).toString()).perform();
+                Thread.sleep(1000);
+                act.sendKeys(Keys.ARROW_DOWN).perform();
+                Thread.sleep(500);
+                act.sendKeys(Keys.ENTER).perform();
+            }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Nome Erro:" + e);
-            System.out.println("Validar Nome: " + e);
+            JOptionPane.showMessageDialog(null, "Pesquisar Erro:" + e);
+            System.out.println("Pesquisar Nome: " + e);
             Limpar();
         }
     }
@@ -806,7 +824,104 @@ public class TelaDisparo extends javax.swing.JFrame {
                     act.sendKeys(Keys.ENTER).perform();
                     Thread.sleep(1000);
                 }
+
+                if (tbAux.getModel().getValueAt(o, 2) != null) {
+                    if (tbAux.getModel().getValueAt(o, 2).toString().isBlank() == false) {
+                        Thread.sleep(1000);
+                        driver.findElement(By.cssSelector(confMidiaClick)).click();
+                        Thread.sleep(1000);
+                        driver.findElement(By.cssSelector(confMidiaSendFile)).sendKeys(tbAux.getModel().getValueAt(o, 2).toString());
+                        Thread.sleep(5000);
+                        driver.findElement(By.cssSelector(confMidiaMensagem)).click();
+                        Thread.sleep(Integer.parseInt(confSleepMensagens));
+                        driver.findElement(By.cssSelector(confMidiaSend)).click();
+                        Thread.sleep(1000);
+
+                    }
+                }
             }
+            ultimoEnvio();
+
+        } catch (org.openqa.selenium.remote.UnreachableBrowserException e) {
+            System.out.println("MensagemDisparo: " + e);
+
+        } catch (org.openqa.selenium.ElementNotInteractableException e) {
+            if (tbAux.getModel().getValueAt(contagemMensagem, 1).toString().isBlank() == false) {
+                driver.findElement(By.cssSelector(confBotaoFecharPath)).click();
+            } else if (tbAux.getModel().getValueAt(contagemMensagem, 1).toString().isBlank() == true) {
+                JOptionPane.showMessageDialog(null, "Mensagem Escrita Erro:" + e);
+            }
+            System.out.println("MensagemDisparo: " + e);
+
+        } catch (org.openqa.selenium.WebDriverException e) {
+            System.out.println("MensagemDisparo: " + e);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Mensagem Erro:" + e);
+            System.out.println("MensagemDisparo: " + e);
+            Limpar();
+        }
+    }
+
+    private void mensagemDisparoFacebook() {
+        try {
+
+            Thread.sleep(2000);
+            js = (JavascriptExecutor) driver;
+
+            for (int o = 0; o < tbAux.getRowCount(); o++) {
+                contagemMensagem = o;
+                if (rbGrupo.isSelected()) {
+                    js.executeScript(confMidiaClick);
+                    Thread.sleep(1000);
+                    if (tbAux.getModel().getValueAt(o, 1).toString().isBlank() == false) {
+                        driver.findElement(By.cssSelector(confMidiaSendFile)).sendKeys(tbAux.getModel().getValueAt(o, 1).toString());
+                        Thread.sleep(10000);
+                        driver.findElement(By.cssSelector(confMidiaMensagem)).click();
+                        Thread.sleep(3000);
+                        act.sendKeys(tbAux.getModel().getValueAt(o, 0).toString()).perform();
+                        driver.findElement(By.cssSelector(confMidiaSend)).click();
+                        Thread.sleep(3000);
+                    } else if (tbAux.getModel().getValueAt(o, 1).toString().isBlank() == true) {
+                        driver.findElement(By.cssSelector(confMidiaMensagem)).click();
+                        Thread.sleep(3000);
+                        act.sendKeys(tbAux.getModel().getValueAt(o, 0).toString()).perform();
+                        driver.findElement(By.cssSelector(confMidiaSend)).click();
+                        Thread.sleep(3000);
+                    }
+                } else {
+                    Thread.sleep(5000);
+                    if (tbAux.getModel().getValueAt(o, 1).toString().isBlank() == false) {
+                        driver.findElement(By.cssSelector(confScroll)).sendKeys(tbAux.getModel().getValueAt(o, 1).toString());
+                        Thread.sleep(5000);
+                        driver.findElement(By.cssSelector(confMensagemPath)).click();
+                        Thread.sleep(Integer.parseInt(confSleepMensagens));
+                        act.sendKeys(tbAux.getModel().getValueAt(o, 0).toString()).perform();
+                        Thread.sleep(2000);
+                        act.sendKeys(Keys.ENTER).perform();   
+                        Thread.sleep(3000);
+                    } else if (tbAux.getModel().getValueAt(o, 1).toString().isBlank() == true) {
+                        driver.findElement(By.cssSelector(confMensagemPath)).click();
+                        Thread.sleep(Integer.parseInt(confSleepMensagens));
+                        act.sendKeys(tbAux.getModel().getValueAt(o, 0).toString()).perform();
+                        Thread.sleep(2000);
+                        act.sendKeys(Keys.ENTER).perform(); 
+                        Thread.sleep(3000);
+                    }
+
+                    if (tbAux.getModel().getValueAt(o, 2) != null) {
+                        if (tbAux.getModel().getValueAt(o, 2).toString().isBlank() == false) {
+                            driver.findElement(By.cssSelector(confScroll)).sendKeys(tbAux.getModel().getValueAt(o, 2).toString());
+                            Thread.sleep(5000);
+                            driver.findElement(By.cssSelector(confMidiaMensagem)).click();
+                            Thread.sleep(Integer.parseInt(confSleepMensagens));
+                            driver.findElement(By.cssSelector(confMidiaSend)).click();
+                            Thread.sleep(3000);
+                        }
+                    }
+                }
+            }
+
             ultimoEnvio();
 
         } catch (org.openqa.selenium.remote.UnreachableBrowserException e) {
@@ -880,6 +995,7 @@ public class TelaDisparo extends javax.swing.JFrame {
         tbConfig = new javax.swing.JTable();
         scAux = new javax.swing.JScrollPane();
         tbAux = new javax.swing.JTable();
+        Modo = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         pnExibição = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -907,6 +1023,13 @@ public class TelaDisparo extends javax.swing.JFrame {
         btnEnviarMensagem = new javax.swing.JButton();
         btnRemoverMensagem = new javax.swing.JButton();
         botaoArredondado1 = new br.com.LeGnus_Disparador.Swing.botaoArredondado();
+        jPanel22 = new javax.swing.JPanel();
+        cbProfile = new javax.swing.JComboBox<>();
+        jPanel4 = new javax.swing.JPanel();
+        jButton2 = new javax.swing.JButton();
+        rbFacebook = new javax.swing.JRadioButton();
+        rbWhatsapp = new javax.swing.JRadioButton();
+        jButton1 = new javax.swing.JButton();
         jPanel10 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         rbNaoEnviados = new javax.swing.JRadioButton();
@@ -1159,11 +1282,11 @@ public class TelaDisparo extends javax.swing.JFrame {
                 .addComponent(rbLimitarCategoria)
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel13Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 83, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnEnviarCategoria)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnRemoverCategoria)
-                        .addContainerGap(83, Short.MAX_VALUE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel13Layout.createSequentialGroup()
                         .addGap(17, 17, 17)
                         .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1290,11 +1413,11 @@ public class TelaDisparo extends javax.swing.JFrame {
         jPanel14Layout.setVerticalGroup(
             jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel14Layout.createSequentialGroup()
-                .addGap(0, 78, Short.MAX_VALUE)
+                .addGap(0, 63, Short.MAX_VALUE)
                 .addComponent(btnEnviarMensagem)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnRemoverMensagem)
-                .addContainerGap(83, Short.MAX_VALUE))
+                .addContainerGap(67, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel14Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -1312,6 +1435,81 @@ public class TelaDisparo extends javax.swing.JFrame {
             }
         });
 
+        jPanel22.setBackground(java.awt.SystemColor.control);
+        jPanel22.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Profile", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Dialog", 1, 12))); // NOI18N
+        jPanel22.setPreferredSize(new java.awt.Dimension(260, 60));
+
+        javax.swing.GroupLayout jPanel22Layout = new javax.swing.GroupLayout(jPanel22);
+        jPanel22.setLayout(jPanel22Layout);
+        jPanel22Layout.setHorizontalGroup(
+            jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(cbProfile, 0, 190, Short.MAX_VALUE)
+        );
+        jPanel22Layout.setVerticalGroup(
+            jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel22Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(cbProfile, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        jPanel4.setBackground(java.awt.SystemColor.control);
+        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Modo", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Arial", 1, 12))); // NOI18N
+
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/LeGnus_Disparador/util/facebook_icon_32x32-removebg-preview.png"))); // NOI18N
+        jButton2.setContentAreaFilled(false);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        Modo.add(rbFacebook);
+        rbFacebook.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbFacebookActionPerformed(evt);
+            }
+        });
+
+        Modo.add(rbWhatsapp);
+        rbWhatsapp.setSelected(true);
+        rbWhatsapp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rbWhatsappActionPerformed(evt);
+            }
+        });
+
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/LeGnus_Disparador/util/watsapp_icon_32x32-removebg-preview.png"))); // NOI18N
+        jButton1.setContentAreaFilled(false);
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addGap(0, 0, 0)
+                .addComponent(rbFacebook)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton2)
+                .addGap(16, 16, 16)
+                .addComponent(rbWhatsapp)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1)
+                .addGap(0, 0, 0))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(jPanel4Layout.createSequentialGroup()
+                            .addGap(10, 10, 10)
+                            .addComponent(rbWhatsapp))
+                        .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING))
+                    .addComponent(jButton2)
+                    .addComponent(rbFacebook)))
+        );
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -1321,16 +1519,23 @@ public class TelaDisparo extends javax.swing.JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(botaoArredondado1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(botaoArredondado1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jPanel22, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(12, 12, 12)
-                .addComponent(jPanel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel22, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(jPanel14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(botaoArredondado1, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -1653,6 +1858,20 @@ public class TelaDisparo extends javax.swing.JFrame {
         disparar();
     }//GEN-LAST:event_botaoArredondado1ActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void rbFacebookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbFacebookActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_rbFacebookActionPerformed
+
+    private void rbWhatsappActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rbWhatsappActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_rbWhatsappActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1689,12 +1908,16 @@ public class TelaDisparo extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.ButtonGroup Modo;
     private javax.swing.ButtonGroup alvo;
     private br.com.LeGnus_Disparador.Swing.botaoArredondado botaoArredondado1;
     private javax.swing.JButton btnEnviarCategoria;
     private javax.swing.JButton btnEnviarMensagem;
     private javax.swing.JButton btnRemoverCategoria;
     private javax.swing.JButton btnRemoverMensagem;
+    private javax.swing.JComboBox<String> cbProfile;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
@@ -1703,7 +1926,9 @@ public class TelaDisparo extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
+    private javax.swing.JPanel jPanel22;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
@@ -1716,10 +1941,12 @@ public class TelaDisparo extends javax.swing.JFrame {
     private javax.swing.JPanel pnCategoriaSelecionada;
     private javax.swing.JPanel pnExibição;
     private javax.swing.JRadioButton rbCliente;
+    private javax.swing.JRadioButton rbFacebook;
     private javax.swing.JRadioButton rbGrupo;
     private javax.swing.JRadioButton rbLimitarCategoria;
     private javax.swing.JRadioButton rbLimitarID;
     private javax.swing.JRadioButton rbNaoEnviados;
+    private javax.swing.JRadioButton rbWhatsapp;
     private javax.swing.JScrollPane scAux;
     private javax.swing.JScrollPane scConfig;
     private javax.swing.JTable tbAux;

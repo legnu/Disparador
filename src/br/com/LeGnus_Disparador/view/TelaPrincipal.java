@@ -64,60 +64,17 @@ public class TelaPrincipal extends javax.swing.JFrame {
         this.dispose();
     }
 
+    private void telaPerfil() {
+        TelaPerfil perfil = new TelaPerfil();
+        perfil.setVisible(true);
+        this.dispose();
+    }
+    
     public TelaPrincipal() {
         initComponents();
         conexao = ModuloConexao.conector();
         setIcon();
     }
-
-    private void envio() {
-        try {
-            Date data = new Date();
-
-            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-            java.sql.Date dSql = new java.sql.Date(data.getTime());
-            df.format(dSql);
-            
-            String sql = "select * from tbgrupos";
-            pst = conexao.prepareStatement(sql);
-            rs = pst.executeQuery();
-            tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
-            
-            for (int i = 0; tbAuxilio.getRowCount() > i; i++) {
-                
-                if (tbAuxilio.getModel().getValueAt(i, 3) == null) {
-                    sql = "update tbgrupos set ultimoEnvioG=? where idgrupo=?";
-                    pst = conexao.prepareStatement(sql);
-                    pst.setDate(1, dSql);
-                    pst.setInt(2,  i+1);
-                    pst.executeUpdate();
-
-                }
-            }
-            
-            sql = "select * from tbclientes";
-            pst = conexao.prepareStatement(sql);
-            rs = pst.executeQuery();
-            tbAuxilio.setModel(DbUtils.resultSetToTableModel(rs));
-            
-            for (int i = 0; tbAuxilio.getRowCount() > i; i++) {
-                
-                if (tbAuxilio.getModel().getValueAt(i, 4) == null) {
-                    sql = "update tbclientes set ultimoEnvioC=? where idcliente=?";
-                    pst = conexao.prepareStatement(sql);
-                    pst.setDate(1, dSql);
-                    pst.setInt(2,  i+1);
-                    pst.executeUpdate();
-
-                }
-            }
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
-
-        }
-    }
-    
 
     private void setIcon() {
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/br/com/LeGnus_Disparador/util/ERPGestao64.png")));
@@ -142,6 +99,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         btnDisparador = new br.com.LeGnus_Disparador.Swing.botaoArredondado();
         btnCadGrupos = new br.com.LeGnus_Disparador.Swing.botaoArredondado();
         btnCadClientes = new br.com.LeGnus_Disparador.Swing.botaoArredondado();
+        btnTelaPerfil = new br.com.LeGnus_Disparador.Swing.botaoArredondado();
 
         tbAuxilio.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -221,14 +179,23 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        btnTelaPerfil.setText("Cadastro Perfil");
+        btnTelaPerfil.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        btnTelaPerfil.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTelaPerfilActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(99, 99, 99)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btnConfig, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(99, 99, 99)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(btnCadClientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnCadGrupos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -237,41 +204,46 @@ public class TelaPrincipal extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(btnDisparador, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnOcorrencias, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnConfig, javax.swing.GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(28, 28, 28)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 756, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(12, Short.MAX_VALUE))
+                            .addComponent(btnTelaPerfil, javax.swing.GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 784, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addComponent(jButton1)
+                .addGap(16, 16, 16)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnCadClientes, javax.swing.GroupLayout.DEFAULT_SIZE, 55, Short.MAX_VALUE)
                     .addComponent(btnDisparador, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(21, 21, 21)
+                .addGap(16, 16, 16)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnCadGrupos, javax.swing.GroupLayout.DEFAULT_SIZE, 55, Short.MAX_VALUE)
                     .addComponent(btnOcorrencias, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
+                .addGap(16, 16, 16)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnCadMensagens, javax.swing.GroupLayout.DEFAULT_SIZE, 55, Short.MAX_VALUE)
-                    .addComponent(btnConfig, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(69, Short.MAX_VALUE))
+                    .addComponent(btnTelaPerfil, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(16, 16, 16)
+                .addComponent(btnConfig, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(16, 16, 16))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
@@ -280,7 +252,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         // TODO add your handling code here:
-        envio();
+  
     }//GEN-LAST:event_formWindowOpened
 
     private void btnCadClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadClientesActionPerformed
@@ -312,6 +284,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
         // TODO add your handling code here:
         telaConfiguraçao();
     }//GEN-LAST:event_btnConfigActionPerformed
+
+    private void btnTelaPerfilActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTelaPerfilActionPerformed
+        // TODO add your handling code here:
+        telaPerfil();
+    }//GEN-LAST:event_btnTelaPerfilActionPerformed
 
     /**
      * @param args the command line arguments
@@ -355,6 +332,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private br.com.LeGnus_Disparador.Swing.botaoArredondado btnConfig;
     private br.com.LeGnus_Disparador.Swing.botaoArredondado btnDisparador;
     private br.com.LeGnus_Disparador.Swing.botaoArredondado btnOcorrencias;
+    private br.com.LeGnus_Disparador.Swing.botaoArredondado btnTelaPerfil;
     private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
